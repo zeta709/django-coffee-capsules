@@ -14,6 +14,8 @@ class Capsule(models.Model):
 		return self.name
 	def get_price(self):
 		return self.price
+	class Meta:
+		ordering = ['name']
 
 class Purchase(models.Model):
 	name = models.CharField(max_length=64)
@@ -51,11 +53,11 @@ class Request(models.Model):
 	#	unique_together = (("purchaseitem", "user"))
 
 class RequestGroup(models.Model):
-	purchaseitem = models.ForeignKey(PurchaseItem)
-	priority = models.BooleanField(default=False)
+	purchaseitem = models.ForeignKey(PurchaseItem, editable=False)
+	priority = models.BooleanField(default=False, editable=False)
 	quantity = models.IntegerField(default=0, editable=False)
 	is_accepted = models.BooleanField(default=False, editable=False)
-	date = models.DateTimeField()
+	date = models.DateTimeField(editable=False)
 	def clean(self):
 		if self.quantity%10 != 0:
 			raise ValidationError('quantity of RequestGroup should be multiples of 10')
