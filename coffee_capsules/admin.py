@@ -79,9 +79,10 @@ class PurchaseItemAdmin(MyAdmin):
 	list_display = ('purchase', 'capsule', 'price', 'quantity_accepted', 'quantity_grouped', 'quantity_queued')
 
 class RequestAdmin(MyNoDeleteAdmin):
-	readonly_fields = ('quantity_accepted', 'quantity_grouped', 'date')
+	readonly_fields = ('quantity_accepted', 'quantity_grouped')
+	my_readonly_update = ('purchaseitem', 'user', 'quantity_queued')
 	fieldsets = [
-		(None, {'fields': ['purchaseitem', 'user', 'date']}),
+		(None, {'fields': ['purchaseitem', 'user']}),
 		('Quantity', {'fields': ['quantity_accepted', 'quantity_grouped', 'quantity_queued']}),
 	]
 	list_filter = ['purchaseitem__purchase']
