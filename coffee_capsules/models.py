@@ -15,7 +15,7 @@ class Capsule(models.Model):
 	def get_price(self):
 		return self.price
 	class Meta:
-		ordering = ['name']
+		ordering = ['pk']
 
 class Purchase(models.Model):
 	name = models.CharField(max_length=64)
