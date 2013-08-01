@@ -53,7 +53,7 @@ class Request(models.Model):
 class RequestGroup(models.Model):
 	purchaseitem = models.ForeignKey(PurchaseItem)
 	priority = models.BooleanField(default=False)
-	quantity = models.IntegerField(default=0)
+	quantity = models.IntegerField(default=0, editable=False)
 	is_accepted = models.BooleanField(default=False, editable=False)
 	date = models.DateTimeField()
 	def clean(self):
@@ -62,38 +62,34 @@ class RequestGroup(models.Model):
 
 @receiver(signals.post_save, sender=Request)
 @transaction.commit_on_success
-def update_RequestGroup(sender, instance, created, **kwargs):
+def insert_RequestGroup(sender, instance, created, **kwargs):
 	if created == False:
 		return
 	g_unit = 10 # TODO: settings
-	if instance.quantity_accepted > 0 or instance.quantity_grouped:
+	if instance.quantity_accepted > 0 or instance.quantity_grouped > 0:
 		print("DEBUG: ERROR")
 	instance.purchaseitem.quantity_queued += instance.quantity_queued
 	instance.purchaseitem.save()
 	if instance.quantity_queued >= g_unit:
 		mypr = True
 		rgqty = (instance.quantity_queued//g_unit)*g_unit
-		rg = RequestGroup(purchaseitem=instance.purchaseitem, priority=mypr, quantity=rgqty, is_accepted=False, date=instance.date)
-		rg.save()
 		instance.purchaseitem.quantity_queued -= rgqty
 		instance.purchaseitem.quantity_grouped += rgqty
 		instance.purchaseitem.save()
 		instance.quantity_queued -= rgqty
 		instance.quantity_grouped += rgqty
 		instance.save()
+		rg = RequestGroup(purchaseitem=instance.purchaseitem, priority=mypr, quantity=rgqty, is_accepted=False, date=instance.date)
+		rg.save()
 	# remainders
 	requests = Request.objects.filter(purchaseitem=instance.purchaseitem, quantity_queued__gt=0).order_by('date')
 	qtysum = requests.aggregate(models.Sum('quantity_queued'))['quantity_queued__sum']
 	if qtysum >= g_unit:
 		mypr = False
 		rgqty = (qtysum//g_unit)*g_unit
-		rg = RequestGroup(purchaseitem=instance.purchaseitem, priority=mypr, quantity=rgqty, is_accepted=False, date=instance.date)
-		rg.save()
 		instance.purchaseitem.quantity_queued -= rgqty
 		instance.purchaseitem.quantity_grouped += rgqty
 		instance.purchaseitem.save()
-		instance.quantity_queued -= rgqty
-		instance.quantity_grouped += rgqty
 		tmp = rgqty
 		for r in requests.all():
 			mod = min(r.quantity_queued, tmp)
@@ -103,3 +99,12 @@ def update_RequestGroup(sender, instance, created, **kwargs):
 			tmp -= mod
 			if tmp == 0:
 				break
+		rg = RequestGroup(purchaseitem=instance.purchaseitem, priority=mypr, quantity=rgqty, is_accepted=False, date=instance.date)
+		rg.save()
+
+@receiver(signals.post_save, sender=RequestGroup)
+@transaction.commit_on_success
+def update_PurchaseItem(sender, instance, created, **kwargs):
+	if created == False:
+		return
+	pass
