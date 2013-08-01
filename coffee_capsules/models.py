@@ -94,7 +94,7 @@ def insert_RequestGroup(sender, instance, created, **kwargs):
 		instance.purchaseitem.save()
 		tmp = rgqty
 		for r in requests.all():
-			mod = min(r.quantity_queued, tmp)
+			mod = min(r.quantity_queued, tmp, g_unit)
 			r.quantity_queued -= mod
 			r.quantity_grouped += mod
 			r.save()
