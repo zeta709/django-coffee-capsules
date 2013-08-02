@@ -129,15 +129,18 @@ def accept_request(instance):
 		instance.purchaseitem.save()
 		tmp = p_qty
 		for rg in rgs.all():
-			mod = min(rg.quantity_grouped, tmp, p_qty)
+			mod = min(rg.quantity_grouped, tmp, p_unit)
 			rg.quantity_grouped -= mod
 			rg.quantity_accepted += mod
 			rg.save()
 			rgitems = RequestGroupItem.objects.filter(requestgroup=rg)
+			tmp2 = mod
 			for rgitem in rgitems.all():
-				rgitem.request.quantity_grouped -= rgitem.quantity
-				rgitem.request.quantity_accepted += rgitem.quantity
+				mod2 = min(rgitem.quantity, tmp2)
+				rgitem.request.quantity_grouped -= mod2
+				rgitem.request.quantity_accepted += mod2
 				rgitem.request.save()
+				tmp2 -= mod2
 			tmp -= mod
 			if tmp == 0:
 				break
