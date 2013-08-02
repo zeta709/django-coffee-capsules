@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from coffee_capsules.models import Capsule, Purchase, PurchaseItem, Request, RequestGroup
+from coffee_capsules.models import Capsule, Purchase, PurchaseItem, Request, RequestGroup, RequestGroupItem
 
 # NOTE
 # readonly-for-existing-items-only-in-django-admin-inline
@@ -90,10 +90,14 @@ class RequestAdmin(MyNoDeleteAdmin):
 
 class RequestGroupAdmin(MyReadonlyAdmin):
 	list_filter = ['purchaseitem__purchase']
-	list_display = ('purchaseitem', 'priority', 'quantity', 'is_accepted', 'date')
+	list_display = ('purchaseitem', 'priority', 'quantity_accepted', 'quantity_grouped', 'date')
+
+class RequestGroupItemAdmin(MyReadonlyAdmin):
+	list_display = ('requestgroup', 'request', 'quantity')
 
 admin.site.register(Capsule, CapsuleAdmin)
 admin.site.register(Purchase, PurchaseAdmin)
 admin.site.register(PurchaseItem, PurchaseItemAdmin)
 admin.site.register(Request, RequestAdmin)
 admin.site.register(RequestGroup, RequestGroupAdmin)
+admin.site.register(RequestGroupItem, RequestGroupItemAdmin)

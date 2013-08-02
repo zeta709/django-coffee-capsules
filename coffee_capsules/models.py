@@ -34,9 +34,9 @@ class PurchaseItem(models.Model):
 	purchase = models.ForeignKey(Purchase)
 	capsule = models.ForeignKey(Capsule, related_name='+')
 	price = models.IntegerField() # 'Since price can be changed, each PurchaseItem has price at the Purchase moment'
-	quantity_accepted = models.IntegerField(default=0, editable=False)
-	quantity_grouped = models.IntegerField(default=0, editable=False)
-	quantity_queued = models.IntegerField(default=0, editable=False)
+	quantity_accepted = models.IntegerField(default=0, editable=False) # TODO: replace with aggregate
+	quantity_grouped = models.IntegerField(default=0, editable=False) # TODO: ..
+	quantity_queued = models.IntegerField(default=0, editable=False) # TODO: ..
 	class Meta:
 		unique_together = (("purchase", "capsule"))
 	def __unicode__(self):
@@ -55,16 +55,22 @@ class Request(models.Model):
 class RequestGroup(models.Model):
 	purchaseitem = models.ForeignKey(PurchaseItem, editable=False)
 	priority = models.BooleanField(default=False, editable=False)
-	quantity = models.IntegerField(default=0, editable=False)
-	is_accepted = models.BooleanField(default=False, editable=False)
+	quantity_accepted = models.IntegerField(default=0, editable=False)
+	quantity_grouped = models.IntegerField(default=0, editable=False)
 	date = models.DateTimeField(editable=False)
+	# TODO: many-to-many fields??
 	def clean(self):
 		if self.quantity%10 != 0:
 			raise ValidationError('quantity of RequestGroup should be multiples of 10')
 
+class RequestGroupItem(models.Model):
+	requestgroup = models.ForeignKey(RequestGroup)
+	request = models.ForeignKey(Request)
+	quantity = models.IntegerField()
+
 @receiver(signals.post_save, sender=Request)
 @transaction.commit_on_success
-def insert_RequestGroup(sender, instance, created, **kwargs):
+def group_request(sender, instance, created, **kwargs):
 	if created == False:
 		return
 	g_unit = 10 # TODO: settings
@@ -81,8 +87,11 @@ def insert_RequestGroup(sender, instance, created, **kwargs):
 		instance.quantity_queued -= rgqty
 		instance.quantity_grouped += rgqty
 		instance.save()
-		rg = RequestGroup(purchaseitem=instance.purchaseitem, priority=mypr, quantity=rgqty, is_accepted=False, date=instance.date)
+		rg = RequestGroup(purchaseitem=instance.purchaseitem, priority=mypr, quantity_grouped=rgqty, date=instance.date)
 		rg.save()
+		rgitem = RequestGroupItem(requestgroup=rg, request=instance, quantity=rgqty)
+		rgitem.save()
+		accept_request(rg)
 	# remainders
 	requests = Request.objects.filter(purchaseitem=instance.purchaseitem, quantity_queued__gt=0).order_by('date')
 	qtysum = requests.aggregate(models.Sum('quantity_queued'))['quantity_queued__sum']
@@ -92,21 +101,45 @@ def insert_RequestGroup(sender, instance, created, **kwargs):
 		instance.purchaseitem.quantity_queued -= rgqty
 		instance.purchaseitem.quantity_grouped += rgqty
 		instance.purchaseitem.save()
+		rg = RequestGroup(purchaseitem=instance.purchaseitem, priority=mypr, quantity_grouped=rgqty, date=instance.date)
+		rg.save()
 		tmp = rgqty
 		for r in requests.all():
 			mod = min(r.quantity_queued, tmp, g_unit)
 			r.quantity_queued -= mod
 			r.quantity_grouped += mod
 			r.save()
+			rgitem = RequestGroupItem(requestgroup=rg, request=r, quantity=mod)
+			rgitem.save()
 			tmp -= mod
 			if tmp == 0:
 				break
-		rg = RequestGroup(purchaseitem=instance.purchaseitem, priority=mypr, quantity=rgqty, is_accepted=False, date=instance.date)
-		rg.save()
+		if tmp != 0:
+			print('ERROR')
+		accept_request(rg)
 
-@receiver(signals.post_save, sender=RequestGroup)
-@transaction.commit_on_success
-def update_PurchaseItem(sender, instance, created, **kwargs):
-	if created == False:
-		return
-	pass
+def accept_request(instance):
+	p_unit = 50 # TODO: settings
+	rgs = RequestGroup.objects.filter(purchaseitem=instance.purchaseitem, quantity_grouped__gt=0).order_by('date')
+	qtysum = rgs.aggregate(models.Sum('quantity_grouped'))['quantity_grouped__sum']
+	if qtysum >= p_unit:
+		p_qty = (qtysum//p_unit)*p_unit
+		instance.purchaseitem.quantity_grouped -= p_qty
+		instance.purchaseitem.quantity_accepted += p_qty
+		instance.purchaseitem.save()
+		tmp = p_qty
+		for rg in rgs.all():
+			mod = min(rg.quantity_grouped, tmp, p_qty)
+			rg.quantity_grouped -= mod
+			rg.quantity_accepted += mod
+			rg.save()
+			rgitems = RequestGroupItem.objects.filter(requestgroup=rg)
+			for rgitem in rgitems.all():
+				rgitem.request.quantity_grouped -= rgitem.quantity
+				rgitem.request.quantity_accepted += rgitem.quantity
+				rgitem.request.save()
+			tmp -= mod
+			if tmp == 0:
+				break
+		if tmp != 0:
+			print('ERROR')
