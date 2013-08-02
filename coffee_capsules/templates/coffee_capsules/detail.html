@@ -24,10 +24,21 @@
 	<br/><br/>{% if request_list %}
 	<table>{% if capsule_list %}
 		<tr>
-			<th>User</th>{% for capsule in capsule_list %}
-			<th>{{ capsule.1 }}</th>{% endfor %}
-			<th>Sum</th>
-			<th>Price</th>
+			<th{% if agq %} rowspan="2"{% endif %}>User</th>{% for capsule in capsule_list %}
+			<th{% if agq %} colspan="3"{% endif %}>{{ capsule.1 }}</th>{% endfor %}
+			<th{% if agq %} colspan="3"{% endif %}>Sum</th>
+			<th{% if agq %} colspan="3"{% endif %}>Price</th>
+		</tr>{% endif %}{% if agq %}
+		<tr>{% for capsule in capsule_list %}
+			<td>A</td>
+			<td>G</td>
+			<td>Q</td>{% endfor %}
+			<td>A</td>
+			<td>G</td>
+			<td>Q</td>
+			<td>A</td>
+			<td>G</td>
+			<td>Q</td>
 		</tr>{% endif %}{% for request in request_list %}
 		<tr>{% for i in request %}
 			<td>{{ i }}</td>{% endfor %}
