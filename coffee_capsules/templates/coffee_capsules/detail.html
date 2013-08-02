@@ -19,7 +19,21 @@
 		</tr>{% endfor %}{% else %}
 		<tr>
 			<td colspan="5">(Empty)</td>
-		</tr>
-		{% endif %}
+		</tr>{% endif %}
 	</table>
+	<br/><br/>{% if request_list %}
+	<table>{% if capsule_list %}
+		<tr>
+			<th>User</th>{% for capsule in capsule_list %}
+			<th>{{ capsule.1 }}</th>{% endfor %}
+			<th>Sum</th>
+			<th>Price</th>
+		</tr>{% endif %}{% for request in request_list %}
+		<tr>{% for i in request %}
+			<td>{{ i }}</td>{% endfor %}
+		</tr>{% endfor %}{% if total_row %}
+		<tr>{% for i in total_row %}
+			<td>{{ i }}</td>{% endfor %}
+		</tr>{% endif %}
+	</table>{% endif %}
 {% endblock %}
