@@ -2,7 +2,6 @@
 {% load url from future %}
 
 {% block content %}
-{% if purchaseitem_list %}
 	<table>
 		<tr>
 			<th>Capsule</th>
@@ -10,16 +9,17 @@
 			<th>Qty. Accepted</th>
 			<th>Qty. Grouped</th>
 			<th>Qty. Queued</th>
-		</tr>{% for purchaseitem in purchaseitem_list %}
+		</tr>{% if purchaseitem_list %}{% for purchaseitem in purchaseitem_list %}
 		<tr>
 			<td>{{ purchaseitem.capsule.name }}</td>
 			<td>{{ purchaseitem.price }}</td>
 			<td>{{ purchaseitem.quantity_accepted }}</td>
 			<td>{{ purchaseitem.quantity_grouped }}</td>
 			<td>{{ purchaseitem.quantity_queued }}</td>
-		</tr>{% endfor %}
+		</tr>{% endfor %}{% else %}
+		<tr>
+			<td colspan="5">(Empty)</td>
+		</tr>
+		{% endif %}
 	</table>
-{% else %}
-	<p>None</p>
-{% endif %}
 {% endblock %}
