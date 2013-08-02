@@ -1,0 +1,25 @@
+{% extends "coffee_capsules/base.html" %}
+{% load url from future %}
+
+{% block content %}
+{% if purchaseitem_list %}
+	<table>
+		<tr>
+			<th>Capsule</th>
+			<th>Price</th>
+			<th>Qty. Accepted</th>
+			<th>Qty. Grouped</th>
+			<th>Qty. Queued</th>
+		</tr>{% for purchaseitem in purchaseitem_list %}
+		<tr>
+			<td>{{ purchaseitem.capsule.name }}</td>
+			<td>{{ purchaseitem.price }}</td>
+			<td>{{ purchaseitem.quantity_accepted }}</td>
+			<td>{{ purchaseitem.quantity_grouped }}</td>
+			<td>{{ purchaseitem.quantity_queued }}</td>
+		</tr>{% endfor %}
+	</table>
+{% else %}
+	<p>None</p>
+{% endif %}
+{% endblock %}

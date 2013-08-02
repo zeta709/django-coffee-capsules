@@ -1,13 +1,25 @@
 from django.http import HttpResponse
+from django.http import Http404
+
 from django.shortcuts import render, get_object_or_404
+from django.views import generic
 
-from coffee_capsules.models import Capsule, Purchase
+from coffee_capsules.models import Capsule, Purchase, PurchaseItem
 
-def index(request):
-	return HttpResponse("index")
+class IndexView(generic.ListView):
+	template_name = 'coffee_capsules/index.html'
+	context_object_name = 'purchase_list'
+	def get_queryset(self):
+		return Purchase.objects.order_by('-pk')
 
-def detail(request, purchase_id):
-	purchase = get_object_or_404(Purchase, pk=purchase_id)
-	myset = purchase.choice_set.all()
-	return HttpResponse("HAHA %s" % purchase_id)
-	#return render(request, 'coffee_capsules/detail.html', {'event': event})
+#class DetailView(generic.ListView):
+#	template_name = 'context_object_name/detail.html'
+#	context_object_name = 'purchase_item_list'
+#	def get_queryset(self):
+#		return PurchaseItem.objects.filter(pk=pk)
+
+def detail(request, myid):
+	purchaseitem_list = PurchaseItem.objects.filter(purchase=myid).order_by('capsule__pk')
+	template_name = 'coffee_capsules/detail.html'
+	context = {'purchaseitem_list': purchaseitem_list}
+	return render(request, template_name, context)

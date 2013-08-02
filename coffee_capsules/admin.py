@@ -95,9 +95,12 @@ class RequestGroupAdmin(MyReadonlyAdmin):
 class RequestGroupItemAdmin(MyReadonlyAdmin):
 	list_display = ('requestgroup', 'request', 'quantity')
 
+
 admin.site.register(Capsule, CapsuleAdmin)
 admin.site.register(Purchase, PurchaseAdmin)
-admin.site.register(PurchaseItem, PurchaseItemAdmin)
 admin.site.register(Request, RequestAdmin)
+
+#
+admin.site.register(PurchaseItem, PurchaseItemAdmin)
 admin.site.register(RequestGroup, RequestGroupAdmin)
 admin.site.register(RequestGroupItem, RequestGroupItemAdmin)
