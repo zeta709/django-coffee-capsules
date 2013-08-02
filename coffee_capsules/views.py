@@ -60,8 +60,11 @@ def detail(request, myid):
 	# get total row
 	zipped = zip(*request_list)
 	total_row = [0 for i in range(len(zipped))]
+	#print(zipped)
 	for i in range(1,len(zipped)):
-		total_row[i] = zipped[i][0] + zipped[i][1]
+		total_row[i] = zipped[i][0]
+		for j in range(1,len(zipped[i])):
+			total_row[i] += zipped[i][1]
 	if len(zipped) > 0:
 		total_row[0] = "Total"
 	# context
