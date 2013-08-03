@@ -12,16 +12,22 @@
 	{% if purchaseitem_list %}
 	<form action="{% url 'coffee_capsules:purchase_request' purchase.id %}" method="post">
 		{% csrf_token %}
-		{% for purchaseitem in purchaseitem_list %}
-		<label for="text_{{ forloop.counter }}">{{ purchaseitem.capsule.name }}</label>
-		<input type="number" name="capsule_{{ purchaseitem.capsule.id }}" id="text_{{ forloop.counter }}" />
-		<br />
-		{% endfor %}
+		<fieldset>
+			<legend>Request Form</legend>
+			{% for purchaseitem in purchaseitem_list %}
+			<label for="text_{{ forloop.counter }}">{{ purchaseitem.capsule.name }}</label>
+			<input type="number" name="capsule_{{ purchaseitem.capsule.id }}" id="text_{{ forloop.counter }}" />
+			<br />
+			{% endfor %}
+		</fieldset>
 		<input type="submit" value="Submit" />
 	</form><br /><br />
 	{% endif %}
 	{# TABLES #}
 	<table>
+		<caption>
+			Summary
+		</caption>
 		<thead>
 		<tr>
 			<th>Capsule</th>
@@ -47,7 +53,7 @@
 	<br /><br />{% if request_list %}
 	<table class="summary">
 		<caption>
-			Summary{%if agq %}<br />(A: accepted, G: grouped, Q: queued){% endif %}
+			Summary for each user{%if agq %}<br />(A: accepted, G: grouped, Q: queued){% endif %}
 		</caption>
 		<colgroup>
 			<col class="name" />{% if capsule_list %}{% for capsule in capsule_list %}
