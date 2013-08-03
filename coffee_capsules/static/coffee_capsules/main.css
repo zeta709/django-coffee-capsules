@@ -8,6 +8,19 @@ table, th, td {
 	text-align: center;
 }
 
-tr:nth-child(even) {
+/* select visually-last row 
+ * (assume that rowspan <= 3)
+ */
+table thead tr:last-child th,
+table thead tr:nth-last-child(2) th[rowspan="2"],
+table thead tr:nth-last-child(3) th[rowspan="3"] {
+	border-bottom-width: 3px;
+}
+
+table tfoot tr:first-child td {
+	border-top-width: 3px;
+}
+
+table tbody tr:nth-child(even) {
 	background-color: #eee;
 }
