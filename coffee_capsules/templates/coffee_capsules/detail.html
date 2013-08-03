@@ -1,6 +1,7 @@
 {% extends "coffee_capsules/base.html" %}
 {% load staticfiles %}
 {% load url from future %}
+{% load humanize %}
 
 {% block extra_style %}
 <link rel="stylesheet" type="text/css" href="{% static 'coffee_capsules/detail.css' %}" />
@@ -33,10 +34,10 @@
 		<tbody>{% if purchaseitem_list %}{% for purchaseitem in purchaseitem_list %}
 		<tr>
 			<td>{{ purchaseitem.capsule.name }}</td>
-			<td>{{ purchaseitem.price }}</td>
-			<td>{{ purchaseitem.quantity_accepted }}</td>
-			<td>{{ purchaseitem.quantity_grouped }}</td>
-			<td>{{ purchaseitem.quantity_queued }}</td>
+			<td>{{ purchaseitem.price|intcomma }}</td>
+			<td>{{ purchaseitem.quantity_accepted|intcomma }}</td>
+			<td>{{ purchaseitem.quantity_grouped|intcomma }}</td>
+			<td>{{ purchaseitem.quantity_queued|intcomma }}</td>
 		</tr>{% endfor %}{% else %}
 		<tr>
 			<td colspan="5">(Empty)</td>
@@ -83,13 +84,13 @@
 		{# BEGIN tfoot #}{% if total_row %}
 		<tfoot>
 		<tr>{% for i in total_row %}
-			<td>{{ i }}</td>{% endfor %}
+			<td>{{ i|intcomma }}</td>{% endfor %}
 		</tr>
 		</tfoot>{% endif %}{# END tfoot #}
 		{# BEGIN body #}{% if request_list %}
 		<tbody>	{% for request in request_list %}
 		<tr>{% for i in request %}
-			<td>{{ i }}</td>{% endfor %}
+			<td>{{ i|intcomma }}</td>{% endfor %}
 		</tr>{% endfor %}
 		</tbody>{% endif %}{# END tbody #}
 	</table>{% endif %}
