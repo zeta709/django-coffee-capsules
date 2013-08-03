@@ -27,6 +27,16 @@ class IndexView(generic.ListView):
 #		return PurchaseItem.objects.filter(pk=pk)
 
 @login_required
+def new_purchase(request):
+	template_name = 'coffee_capsules/new_purchase.html'
+	all_capsule_list = Capsule.objects.order_by('pk')
+	##### context
+	context = {
+		'capsule_list': all_capsule_list,
+		}
+	return render(request, template_name, context)
+
+@login_required
 def purchase_request(request, myid):
 	# TODO: user
 	purchase = get_object_or_404(Purchase, pk=myid)
