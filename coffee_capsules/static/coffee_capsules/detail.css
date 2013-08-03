@@ -1,0 +1,8 @@
+table td:first-child {
+	font-weight: bold;
+}
+
+table.summary tr > td:nth-child(3n+2) {
+	font-weight: bold;
+	color: green;
+}

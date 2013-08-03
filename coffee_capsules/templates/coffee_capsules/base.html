@@ -4,6 +4,7 @@
 <head>
 <title>{% block title %}{% endblock %}</title>
 <link rel="stylesheet" type="text/css" href="{% static 'coffee_capsules/main.css' %}" />
+{% block extra_style %}{% endblock %}
 </head>
 <body>
 {% block content %}{% endblock %}

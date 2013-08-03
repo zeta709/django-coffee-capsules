@@ -1,5 +1,10 @@
 {% extends "coffee_capsules/base.html" %}
+{% load staticfiles %}
 {% load url from future %}
+
+{% block extra_style %}
+<link rel="stylesheet" type="text/css" href="{% static 'coffee_capsules/detail.css' %}" />
+{% endblock %}
 
 {% block content %}
 	<table>
@@ -26,10 +31,22 @@
 		</tbody>
 	</table>
 	<br /><br />{% if request_list %}
-	<table>
+	<table class="summary">
 		<caption>
 			Summary{%if agq %}<br />(A: accepted, G: grouped, Q: queued){% endif %}
 		</caption>
+		<colgroup>
+			<col class="name" />{% if capsule_list %}{% for capsule in capsule_list %}
+			<col class="quantity accepted" />
+			<col class="quantity grouped" />
+			<col class="quantity queued" />{% endfor %}{% endif %}
+			<col class="sum accepted" />
+			<col class="sum grouped" />
+			<col class="sum queued" />
+			<col class="price accepted" />
+			<col class="price grouped" />
+			<col class="price queued" />
+		</colgroup>
 		{# BEGIN thead #}{% if capsule_list %}
 		<thead>
 		<tr>
