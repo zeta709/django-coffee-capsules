@@ -2,6 +2,18 @@
 {% load url from future %}
 
 {% block content %}
+
+{% if formset %}
+<form method="post" action="">
+	{% csrf_token %}
+	<table>
+	{{ formset }}
+	</table>
+	<input type="submit" value="Submit" />
+</form>
+<br /><br />
+{% endif %}
+
 {% if capsule_list %}
 	<table>
 		<tr>

@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.http import Http404
 
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, render_to_response
 from django.views import generic
 
 from django.db import connection, transaction
@@ -11,6 +11,8 @@ from django.db import connection, transaction
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+
+from django.forms.models import modelformset_factory
 
 from coffee_capsules.models import Capsule, Purchase, PurchaseItem, Request
 
@@ -28,10 +30,15 @@ class IndexView(generic.ListView):
 
 @login_required
 def new_purchase(request):
+	PurchaseFormSet = modelformset_factory(Purchase, extra=1)
+	if request.method == 'POST':
+		pass
+	formset = PurchaseFormSet(queryset=Purchase.objects.none())
 	template_name = 'coffee_capsules/new_purchase.html'
 	all_capsule_list = Capsule.objects.order_by('pk')
 	##### context
 	context = {
+		'formset': formset,
 		'capsule_list': all_capsule_list,
 		}
 	return render(request, template_name, context)
