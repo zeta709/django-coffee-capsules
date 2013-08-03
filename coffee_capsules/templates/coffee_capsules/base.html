@@ -10,11 +10,12 @@
 <body>
 
 <div class="header">
-{% if user.is_anonymous %}
-<a href="/accounts/login">login</a>
-{% else %}
-<a href="/accounts/logout">logout</a>
-{% endif %}
+{% if user.is_authenticated %}<!--
+--><div>Hello, <strong>{{ user.username }}</strong></div><!--
+--><div><a href="/accounts/logout">logout</a></div><!--
+-->{% else %}<!--
+--><div><a href="/accounts/login">login</a></div><!--
+-->{% endif %}
 </div>
 
 {% block content %}{% endblock %}

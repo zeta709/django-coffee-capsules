@@ -4,15 +4,48 @@ body {
 	margin-right: auto;
 }
 
-div.header {
+/*************************************** 
+ * .header, .footer
+ **************************************/
+
+div.header, div.footer {
 	width: 100%;
 	margin-left: auto;
 	margin-right: auto;
-	padding-bottom: 10px;
-	border-bottom: 1px solid;
+	margin-top: 10px;
 	margin-bottom: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+div.header > div,
+div.footer > div {
+	display: inline-block;
+	padding-left: 1em;
+	padding-right: 1em;
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+div.header {
+	border-bottom: 1px solid;
 	text-align: right;
 }
+
+div.footer {
+	border-top: 1px solid;
+	text-align: center;
+}
+
+div.header, div.footer {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+/*************************************** 
+ * form
+ **************************************/
 
 form {
 	width: 100%;
@@ -20,6 +53,10 @@ form {
 	margin-left: auto;
 	margin-right: auto;
 }
+
+/*************************************** 
+ * table
+ **************************************/
 
 table, th, td {
 	margin-left: auto;
