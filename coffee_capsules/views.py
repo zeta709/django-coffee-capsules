@@ -79,6 +79,8 @@ def detail(request, myid):
 			+ ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s)'
 		cursor.execute(query_str_0, [myid])
 		select_str = cursor.fetchall()[0][0]
+	if select_str is None:
+		select_str = 'COUNT(*)'
 	#### get pivot table
 	query_str_1 = 'SELECT auth_user.username, ' + select_str
 	if agq == False:
