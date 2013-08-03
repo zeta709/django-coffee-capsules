@@ -8,6 +8,12 @@
 {% endblock %}
 
 {% block content %}
+	{% if user.is_anonymous %}
+	{% else %}
+	<div class="logout">
+	<a href="/accounts/logout">logout</a>
+	</div>
+	{% endif %}
 	{# FORM #}
 	{% if purchaseitem_list %}
 	<form action="{% url 'coffee_capsules:purchase_request' purchase.id %}" method="post">

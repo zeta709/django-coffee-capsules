@@ -37,7 +37,7 @@ def purchase_request(request, myid):
 			value = int(request.POST[name])
 		except ValueError:
 			value = 0
-		new_request = Request(purchaseitem=purchaseitem, user=User.objects.get(pk=1), quantity_queued=value)
+		new_request = Request(purchaseitem=purchaseitem, user=request.user, quantity_queued=value)
 		new_request.save()
 	return HttpResponseRedirect(reverse('coffee_capsules:detail', args=(purchase.id,)))
 
