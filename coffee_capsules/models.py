@@ -1,7 +1,4 @@
 from django.db import models
-from django.db import transaction
-from django.db.models import signals
-from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.exceptions import ValidationError
@@ -73,6 +70,13 @@ class RequestGroupItem(models.Model):
 	requestgroup = models.ForeignKey(RequestGroup)
 	request = models.ForeignKey(Request)
 	quantity = models.IntegerField()
+
+################################################################################
+# auto-update-other-fields functons (similar to trigger)
+################################################################################
+from django.db import transaction
+from django.db.models import signals
+from django.dispatch import receiver
 
 @receiver(signals.post_save, sender=Request)
 @transaction.commit_on_success
