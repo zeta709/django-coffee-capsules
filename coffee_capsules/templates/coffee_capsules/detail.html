@@ -8,12 +8,6 @@
 {% endblock %}
 
 {% block content %}
-	{% if user.is_anonymous %}
-	{% else %}
-	<div class="logout">
-	<a href="/accounts/logout">logout</a>
-	</div>
-	{% endif %}
 	{# FORM #}
 	{% if purchaseitem_list %}
 	<form action="{% url 'coffee_capsules:purchase_request' purchase.id %}" method="post">
@@ -22,7 +16,7 @@
 			<legend>Request Form</legend>
 			{% for purchaseitem in purchaseitem_list %}
 			<label for="text_{{ forloop.counter }}">{{ purchaseitem.capsule.name }}</label>
-			<input type="number" name="capsule_{{ purchaseitem.capsule.id }}" id="text_{{ forloop.counter }}" />
+			<input type="number" min="0" max="200" value="0" name="capsule_{{ purchaseitem.capsule.id }}" id="text_{{ forloop.counter }}" />
 			<br />
 			{% endfor %}
 		</fieldset>

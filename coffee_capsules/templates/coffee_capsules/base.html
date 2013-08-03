@@ -8,6 +8,16 @@
 {% block extra_style %}{% endblock %}
 </head>
 <body>
+
+<div class="header">
+{% if user.is_anonymous %}
+<a href="/accounts/login">login</a>
+{% else %}
+<a href="/accounts/logout">logout</a>
+{% endif %}
+</div>
+
 {% block content %}{% endblock %}
+
 </body>
 </html>
