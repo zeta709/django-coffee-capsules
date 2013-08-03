@@ -1,4 +1,6 @@
-from django.http import HttpResponse
+from django.core.urlresolvers import reverse
+
+from django.http import HttpResponseRedirect, HttpResponse
 from django.http import Http404
 
 from django.shortcuts import render, get_object_or_404
@@ -19,6 +21,11 @@ class IndexView(generic.ListView):
 #	context_object_name = 'purchase_item_list'
 #	def get_queryset(self):
 #		return PurchaseItem.objects.filter(pk=pk)
+
+def purchase_request(request, myid):
+	print("TODO")
+	purchase = get_object_or_404(Purchase, pk=myid)
+	return HttpResponseRedirect(reverse('coffee_capsules:detail', args=(purchase.id,)))
 
 @transaction.commit_on_success
 def detail(request, myid):
@@ -99,6 +106,7 @@ def detail(request, myid):
 	##### context
 	context = {
 		'agq': agq,
+		'purchase': purchase,
 		'purchaseitem_list': purchaseitem_list,
 		'capsule_list': capsule_list,
 		'request_list': request_list,

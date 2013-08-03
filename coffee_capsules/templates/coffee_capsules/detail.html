@@ -9,7 +9,7 @@
 {% block content %}
 	{# FORM #}
 	{% if purchaseitem_list %}
-	<form>
+	<form action="{% url 'coffee_capsules:purchase_request' purchase.id %}" method="post">
 		{% csrf_token %}
 		{% for purchaseitem in purchaseitem_list %}
 		<label for="text_{{ forloop.counter }}">{{ purchaseitem.capsule.name }}</label>
