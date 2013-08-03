@@ -24,7 +24,8 @@ class IndexView(generic.ListView):
 def detail(request, myid):
 	agq = True
 	template_name = 'coffee_capsules/detail.html'
-	purchaseitem_list = PurchaseItem.objects.filter(purchase=myid).order_by('capsule__pk')
+	purchase = get_object_or_404(Purchase, pk=myid)
+	purchaseitem_list = purchase.purchaseitem_set.order_by('capsule__pk')
 	#### raw db connection
 	cursor = connection.cursor()
 	#### get capsule list
