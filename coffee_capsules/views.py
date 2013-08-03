@@ -12,6 +12,8 @@ from django.db import connection, transaction
 
 from django.contrib.auth.models import User
 
+from django.contrib.auth.decorators import login_required
+
 class IndexView(generic.ListView):
 	template_name = 'coffee_capsules/index.html'
 	context_object_name = 'purchase_list'
@@ -24,6 +26,7 @@ class IndexView(generic.ListView):
 #	def get_queryset(self):
 #		return PurchaseItem.objects.filter(pk=pk)
 
+@login_required
 def purchase_request(request, myid):
 	# TODO: user
 	purchase = get_object_or_404(Purchase, pk=myid)
@@ -38,6 +41,7 @@ def purchase_request(request, myid):
 		new_request.save()
 	return HttpResponseRedirect(reverse('coffee_capsules:detail', args=(purchase.id,)))
 
+@login_required
 @transaction.commit_on_success
 def detail(request, myid):
 	agq = True
