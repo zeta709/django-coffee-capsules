@@ -111,7 +111,7 @@ def group_request(sender, instance, created, **kwargs):
 		rg.save()
 		tmp = rgqty
 		for r in requests.all():
-			mod = min(r.quantity_queued, tmp, g_unit)
+			mod = min(r.quantity_queued, tmp)
 			r.quantity_queued -= mod
 			r.quantity_grouped += mod
 			r.save()
@@ -132,7 +132,7 @@ def accept_request(instance):
 		p_qty = (qtysum//p_unit)*p_unit
 		tmp = p_qty
 		for rg in rgs.all():
-			mod = min(rg.quantity_grouped, tmp, p_unit)
+			mod = min(rg.quantity_grouped, tmp)
 			rg.purchaseitem.quantity_grouped -= mod
 			rg.purchaseitem.quantity_accepted += mod
 			rg.purchaseitem.save()
