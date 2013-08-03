@@ -5,6 +5,17 @@ body {
 }
 
 /*************************************** 
+ * .messages
+ **************************************/
+.messages .success {
+	background-color: green;
+}
+
+.messages .error {
+	background-color: red;
+}
+
+/*************************************** 
  * .header, .footer
  **************************************/
 

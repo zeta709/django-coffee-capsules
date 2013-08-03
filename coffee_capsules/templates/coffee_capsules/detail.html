@@ -8,6 +8,12 @@
 {% endblock %}
 
 {% block content %}
+	{% if messages %}
+	<div class="messages">{% for message in messages %}
+		<div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+		{% endfor %}
+	</div>
+	{% endif %}
 	{# FORM #}
 	{% if purchaseitem_list %}
 	<form action="{% url 'coffee_capsules:purchase_request' purchase.id %}" method="post">
@@ -16,7 +22,7 @@
 			<legend>Request Form</legend>
 			{% for purchaseitem in purchaseitem_list %}
 			<label for="text_{{ forloop.counter }}">{{ purchaseitem.capsule.name }}</label>
-			<input type="number" min="0" max="200" value="0" name="capsule_{{ purchaseitem.capsule.id }}" id="text_{{ forloop.counter }}" />
+			<input type="text" min="0" max="200" value="0" name="capsule_{{ purchaseitem.capsule.id }}" id="text_{{ forloop.counter }}" />
 			<br />
 			{% endfor %}
 		</fieldset>

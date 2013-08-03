@@ -6,13 +6,13 @@ from django.http import Http404
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 
-from coffee_capsules.models import Capsule, Purchase, PurchaseItem, Request
-
 from django.db import connection, transaction
 
+from django.contrib import messages
 from django.contrib.auth.models import User
-
 from django.contrib.auth.decorators import login_required
+
+from coffee_capsules.models import Capsule, Purchase, PurchaseItem, Request
 
 class IndexView(generic.ListView):
 	template_name = 'coffee_capsules/index.html'
@@ -31,14 +31,33 @@ def purchase_request(request, myid):
 	# TODO: user
 	purchase = get_object_or_404(Purchase, pk=myid)
 	purchaseitem_list = purchase.purchaseitem_set.order_by('capsule__pk')
+	value_list = []
+	value_sum = 0
+	has_error = False
 	for purchaseitem in purchaseitem_list:
 		name = "capsule_" + str(purchaseitem.capsule.id)
 		try:
 			value = int(request.POST[name])
 		except ValueError:
 			value = 0
-		new_request = Request(purchaseitem=purchaseitem, user=request.user, quantity_queued=value)
-		new_request.save()
+			has_error = True
+			messages.error(request, 'Wrong values')
+			break
+		if value < 0:
+			has_error = True
+			messages.error(request, 'Values cannot be negative')
+			break
+		value_sum += value
+		value_list.append(value)
+	if has_error is False and value_sum <= 0:
+		has_error = True
+		messages.error(request, 'Sum of values must be greather than 0')
+	if has_error is False:
+		messages.success(request, 'Success')
+		for i, purchaseitem in enumerate(purchaseitem_list):
+			if value_list[i] > 0:
+				new_request = Request(purchaseitem=purchaseitem, user=request.user, quantity_queued=value_list[i])
+				new_request.save()
 	return HttpResponseRedirect(reverse('coffee_capsules:detail', args=(purchase.id,)))
 
 @login_required
