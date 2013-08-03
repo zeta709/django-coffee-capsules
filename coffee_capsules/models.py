@@ -34,15 +34,15 @@ class PurchaseItem(models.Model):
 	purchase = models.ForeignKey(Purchase)
 	capsule = models.ForeignKey(Capsule, related_name='+')
 	price = models.IntegerField() # 'Since price can be changed, each PurchaseItem has price at the Purchase moment'
-	#quantity_accepted = models.IntegerField(default=0, editable=False) # TODO: replace with aggregate
-	#quantity_grouped = models.IntegerField(default=0, editable=False) # TODO: ..
-	#quantity_queued = models.IntegerField(default=0, editable=False) # TODO: ..
-	def quantity_accepted(self):
-		return self.request_set.aggregate(models.Sum('quantity_accepted'))['quantity_accepted__sum']
-	def quantity_grouped(self):
-		return self.request_set.aggregate(models.Sum('quantity_grouped'))['quantity_grouped__sum']
-	def quantity_queued(self):
-		return self.request_set.aggregate(models.Sum('quantity_queued'))['quantity_queued__sum']
+	quantity_accepted = models.IntegerField(default=0, editable=False)
+	quantity_grouped = models.IntegerField(default=0, editable=False)
+	quantity_queued = models.IntegerField(default=0, editable=False)
+	#def quantity_accepted(self):
+	#	return self.request_set.aggregate(models.Sum('quantity_accepted'))['quantity_accepted__sum']
+	#def quantity_grouped(self):
+	#	return self.request_set.aggregate(models.Sum('quantity_grouped'))['quantity_grouped__sum']
+	#def quantity_queued(self):
+	#	return self.request_set.aggregate(models.Sum('quantity_queued'))['quantity_queued__sum']
 	class Meta:
 		unique_together = (("purchase", "capsule"))
 	def __unicode__(self):
@@ -82,14 +82,14 @@ def group_request(sender, instance, created, **kwargs):
 	g_unit = 10 # TODO: settings
 	if instance.quantity_accepted > 0 or instance.quantity_grouped > 0:
 		print("DEBUG: ERROR")
-	#instance.purchaseitem.quantity_queued += instance.quantity_queued
-	#instance.purchaseitem.save()
+	instance.purchaseitem.quantity_queued += instance.quantity_queued
+	instance.purchaseitem.save()
 	if instance.quantity_queued >= g_unit:
 		mypr = True
 		rgqty = (instance.quantity_queued//g_unit)*g_unit
-		#instance.purchaseitem.quantity_queued -= rgqty
-		#instance.purchaseitem.quantity_grouped += rgqty
-		#instance.purchaseitem.save()
+		instance.purchaseitem.quantity_queued -= rgqty
+		instance.purchaseitem.quantity_grouped += rgqty
+		instance.purchaseitem.save()
 		instance.quantity_queued -= rgqty
 		instance.quantity_grouped += rgqty
 		instance.save()
@@ -104,9 +104,9 @@ def group_request(sender, instance, created, **kwargs):
 	if qtysum >= g_unit:
 		mypr = False
 		rgqty = (qtysum//g_unit)*g_unit
-		#instance.purchaseitem.quantity_queued -= rgqty
-		#instance.purchaseitem.quantity_grouped += rgqty
-		#instance.purchaseitem.save()
+		instance.purchaseitem.quantity_queued -= rgqty
+		instance.purchaseitem.quantity_grouped += rgqty
+		instance.purchaseitem.save()
 		rg = RequestGroup(purchaseitem=instance.purchaseitem, priority=mypr, quantity_grouped=rgqty, date=instance.date)
 		rg.save()
 		tmp = rgqty
@@ -133,9 +133,9 @@ def accept_request(instance):
 		tmp = p_qty
 		for rg in rgs.all():
 			mod = min(rg.quantity_grouped, tmp, p_unit)
-			#rg.purchaseitem.quantity_grouped -= mod
-			#rg.purchaseitem.quantity_accepted += mod
-			#rg.purchaseitem.save()
+			rg.purchaseitem.quantity_grouped -= mod
+			rg.purchaseitem.quantity_accepted += mod
+			rg.purchaseitem.save()
 			rg.quantity_grouped -= mod
 			rg.quantity_accepted += mod
 			rg.save()
