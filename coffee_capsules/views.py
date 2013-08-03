@@ -10,6 +10,8 @@ from coffee_capsules.models import Capsule, Purchase, PurchaseItem, Request
 
 from django.db import connection, transaction
 
+from django.contrib.auth.models import User
+
 class IndexView(generic.ListView):
 	template_name = 'coffee_capsules/index.html'
 	context_object_name = 'purchase_list'
@@ -23,8 +25,17 @@ class IndexView(generic.ListView):
 #		return PurchaseItem.objects.filter(pk=pk)
 
 def purchase_request(request, myid):
-	print("TODO")
+	# TODO: user
 	purchase = get_object_or_404(Purchase, pk=myid)
+	purchaseitem_list = purchase.purchaseitem_set.order_by('capsule__pk')
+	for purchaseitem in purchaseitem_list:
+		name = "capsule_" + str(purchaseitem.capsule.id)
+		try:
+			value = int(request.POST[name])
+		except ValueError:
+			value = 0
+		new_request = Request(purchaseitem=purchaseitem, user=User.objects.get(pk=1), quantity_queued=value)
+		new_request.save()
 	return HttpResponseRedirect(reverse('coffee_capsules:detail', args=(purchase.id,)))
 
 @transaction.commit_on_success
