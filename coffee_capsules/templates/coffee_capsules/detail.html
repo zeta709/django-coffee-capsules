@@ -7,6 +7,19 @@
 {% endblock %}
 
 {% block content %}
+	{# FORM #}
+	{% if purchaseitem_list %}
+	<form>
+		{% csrf_token %}
+		{% for purchaseitem in purchaseitem_list %}
+		<label for="text_{{ forloop.counter }}">{{ purchaseitem.capsule.name }}</label>
+		<input type="text" name="capsule" id="text_{{ forloop.counter }}" />
+		<br />
+		{% endfor %}
+		<input type="submit" value="Submit" />
+	</form><br /><br />
+	{% endif %}
+	{# TABLES #}
 	<table>
 		<thead>
 		<tr>
