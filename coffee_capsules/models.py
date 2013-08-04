@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 
+
 class Capsule(models.Model):
 	name = models.CharField(max_length=64, unique=True)
 	price = models.IntegerField()
@@ -22,6 +23,14 @@ class Purchase(models.Model):
 	begin_date = models.DateTimeField()
 	end_date = models.DateTimeField()
 	is_closed = models.BooleanField(default=False)
+	g_unit = models.PositiveIntegerField('Group unit', default=10,
+					     help_text="Each purchase item"
+					     " is available in units of this value."
+					     " (default: 10)")
+	p_unit = models.PositiveIntegerField('Purchase unit', default=50,
+					     help_text="Sum of all purchase items"
+					     " should be in units of this value."
+					     " (default: 50)")
 	def is_not_open(self):
 		return self.begin_date > timezone.now()
 	def is_ended(self):
@@ -33,6 +42,8 @@ class Purchase(models.Model):
 			raise ValidationError('begin_date >= end_date')
 		if self.end_date <= timezone.now():
 			raise ValidationError('end_date is not in the future')
+		if self.p_unit%self.g_unit != 0:
+			raise ValidationError("Purchase unit sholud be multiples of group unit")
 
 class PurchaseItem(models.Model):
 	purchase = models.ForeignKey(Purchase)
@@ -79,8 +90,10 @@ class RequestGroup(models.Model):
 	date = models.DateTimeField(editable=False)
 	# TODO: many-to-many fields??
 	def clean(self):
-		if self.quantity%10 != 0:
-			raise ValidationError('quantity of RequestGroup should be multiples of 10')
+		my_g_unit = self.purchaseitem.purchase.g_unit
+		if self.quantity%(my_g_unit) != 0:
+			raise ValidationError("quantity of RequestGroup"
+					      " should be multiples of group unit.")
 
 class RequestGroupItem(models.Model):
 	requestgroup = models.ForeignKey(RequestGroup)
@@ -99,14 +112,14 @@ from django.dispatch import receiver
 def group_request(sender, instance, created, **kwargs):
 	if created == False:
 		return
-	g_unit = 10 # TODO: settings
+	my_g_unit = instance.purchaseitem.purchase.g_unit
 	if instance.quantity_accepted > 0 or instance.quantity_grouped > 0:
 		print("DEBUG: ERROR")
 	instance.purchaseitem.quantity_queued += instance.quantity_queued
 	instance.purchaseitem.save()
-	if instance.quantity_queued >= g_unit:
+	if instance.quantity_queued >= my_g_unit:
 		mypr = True
-		rgqty = (instance.quantity_queued//g_unit)*g_unit
+		rgqty = (instance.quantity_queued//my_g_unit)*my_g_unit
 		instance.purchaseitem.quantity_queued -= rgqty
 		instance.purchaseitem.quantity_grouped += rgqty
 		instance.purchaseitem.save()
@@ -121,9 +134,9 @@ def group_request(sender, instance, created, **kwargs):
 	# remainders
 	requests = Request.objects.filter(purchaseitem=instance.purchaseitem, quantity_queued__gt=0).order_by('date')
 	qtysum = requests.aggregate(models.Sum('quantity_queued'))['quantity_queued__sum']
-	if qtysum >= g_unit:
+	if qtysum >= my_g_unit:
 		mypr = False
-		rgqty = (qtysum//g_unit)*g_unit
+		rgqty = (qtysum//my_g_unit)*my_g_unit
 		instance.purchaseitem.quantity_queued -= rgqty
 		instance.purchaseitem.quantity_grouped += rgqty
 		instance.purchaseitem.save()
@@ -145,11 +158,11 @@ def group_request(sender, instance, created, **kwargs):
 		accept_request(rg)
 
 def accept_request(instance):
-	p_unit = 50 # TODO: settings
+	my_p_unit = instance.purchaseitem.purchase.p_unit
 	rgs = RequestGroup.objects.filter(purchaseitem__purchase=instance.purchaseitem.purchase, quantity_grouped__gt=0).order_by('date')
 	qtysum = rgs.aggregate(models.Sum('quantity_grouped'))['quantity_grouped__sum']
-	if qtysum >= p_unit:
-		p_qty = (qtysum//p_unit)*p_unit
+	if qtysum >= my_p_unit:
+		p_qty = (qtysum//my_p_unit)*my_p_unit
 		tmp = p_qty
 		for rg in rgs.all():
 			mod = min(rg.quantity_grouped, tmp)
