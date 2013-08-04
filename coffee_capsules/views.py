@@ -15,6 +15,7 @@ from django.contrib.auth.decorators import login_required
 from django.forms.models import modelformset_factory
 
 from coffee_capsules.models import Capsule, Purchase, PurchaseItem, Request
+from coffee_capsules.forms import PurchaseForm
 
 class IndexView(generic.ListView):
 	template_name = 'coffee_capsules/index.html'
@@ -28,9 +29,10 @@ class IndexView(generic.ListView):
 #	def get_queryset(self):
 #		return PurchaseItem.objects.filter(pk=pk)
 
+from django.forms import forms
 @login_required
 def new_purchase(request):
-	PurchaseFormSet = modelformset_factory(Purchase, extra=1)
+	PurchaseFormSet = modelformset_factory(Purchase, form=PurchaseForm, extra=1)
 	if request.method == 'POST':
 		pass
 	formset = PurchaseFormSet(queryset=Purchase.objects.none())
