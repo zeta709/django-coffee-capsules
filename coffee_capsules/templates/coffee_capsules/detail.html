@@ -14,11 +14,14 @@
 		{% csrf_token %}
 		<fieldset>
 			<legend>Request Form</legend>
+			<table>
 			{% for purchaseitem in purchaseitem_list %}
-			<label for="text_{{ forloop.counter }}">{{ purchaseitem.capsule.name }}</label>
-			<input type="text" min="0" max="200" value="0" name="capsule_{{ purchaseitem.capsule.id }}" id="text_{{ forloop.counter }}" />
-			<br />
+			<tr>
+			<td><label for="text_{{ forloop.counter }}">{{ purchaseitem.capsule.name }}</label></td>
+			<td><input type="number" min="0" max="200" value="0" name="capsule_{{ purchaseitem.capsule.id }}" id="text_{{ forloop.counter }}" /></td>
+			</tr>
 			{% endfor %}
+			</table>
 		</fieldset>
 		<input type="submit" value="Submit" />
 	</form><br /><br />
