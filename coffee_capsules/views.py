@@ -18,6 +18,8 @@ from django.forms.models import inlineformset_factory
 from coffee_capsules.models import Capsule, Purchase, PurchaseItem, Request
 from coffee_capsules.forms import PurchaseForm
 
+from django.utils import timezone
+
 class IndexView(generic.ListView):
 	template_name = 'coffee_capsules/index.html'
 	context_object_name = 'purchase_list'
@@ -89,27 +91,33 @@ def new_purchase(request):
 
 @login_required
 def purchase_request(request, myid):
-	# TODO: user
 	purchase = get_object_or_404(Purchase, pk=myid)
-	purchaseitem_list = purchase.purchaseitem_set.order_by('capsule__pk')
-	value_list = []
-	value_sum = 0
 	has_error = False
-	for purchaseitem in purchaseitem_list:
-		name = "capsule_" + str(purchaseitem.capsule.id)
-		try:
-			value = int(request.POST[name])
-		except ValueError:
-			value = 0
-			has_error = True
-			messages.error(request, 'Wrong values')
-			break
-		if value < 0:
-			has_error = True
-			messages.error(request, 'Values cannot be negative')
-			break
-		value_sum += value
-		value_list.append(value)
+	if purchase.is_not_open():
+		has_error = True
+		messages.error(request, 'The purchase is not yet open')
+	if purchase.is_ended():
+		has_error = True
+		messages.error(request, 'The purchase is aleady ended')
+	if has_error is False:
+		purchaseitem_list = purchase.purchaseitem_set.order_by('capsule__pk')
+		value_list = []
+		value_sum = 0
+		for purchaseitem in purchaseitem_list:
+			name = "capsule_" + str(purchaseitem.capsule.id)
+			try:
+				value = int(request.POST[name])
+			except ValueError:
+				value = 0
+				has_error = True
+				messages.error(request, 'Wrong values')
+				break
+			if value < 0:
+				has_error = True
+				messages.error(request, 'Values cannot be negative')
+				break
+			value_sum += value
+			value_list.append(value)
 	if has_error is False and value_sum <= 0:
 		has_error = True
 		messages.error(request, 'Sum of values must be greather than 0')

@@ -22,6 +22,10 @@ class Purchase(models.Model):
 	begin_date = models.DateTimeField()
 	end_date = models.DateTimeField()
 	is_closed = models.BooleanField(default=False)
+	def is_not_open(self):
+		return self.begin_date > timezone.now()
+	def is_ended(self):
+		return timezone.now() > self.end_date
 	def __unicode__(self):
 		return self.name
 	def clean(self):

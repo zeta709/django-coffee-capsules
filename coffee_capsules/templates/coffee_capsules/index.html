@@ -15,7 +15,7 @@
 			<td>{{ purchase.name }}</td>
 			<td>{{ purchase.begin_date }}</td>
 			<td>{{ purchase.end_date }}</td>
-			<td>{% if purchase.is_closed %}Closed{% else %}Open{% endif %}</td>
+			<td>{% if purchase.is_closed %}Closed{% elif purchase.is_ended %}Ended{% elif purchase.is_not_open %}Not open{% else %}Open{% endif %}</td>
 			<td><a href="{% url 'coffee_capsules:detail' purchase.pk %}">View</a></td>
 		</tr>{% endfor %}
 	</table>
