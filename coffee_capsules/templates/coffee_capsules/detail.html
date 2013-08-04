@@ -3,8 +3,39 @@
 {% load url from future %}
 {% load humanize %}
 
-{% block extra_style %}
+{% block extra_styles %}
 <link rel="stylesheet" type="text/css" href="{% static 'coffee_capsules/detail.css' %}" />
+{% endblock %}
+
+{% block extra_scripts %}
+<script type="text/javascript">
+function toggle(i) {
+	var toggle_className;
+	var mytab = document.getElementById('summary_each');
+	var mygroup = mytab.getElementsByClassName('mycolgroup');
+	switch (i) {
+	case 1:
+		break;
+	case 2:
+		toggle_className = 'hide_grouped';
+		break;
+	case 3:
+		toggle_className = 'hide_queued';
+		break;
+	}
+	var x;
+	if (mytab.classList.contains(toggle_className)) {
+		x = 1;
+	} else {
+		x = -1;
+	}
+	for (var i = 0; i < mygroup.length; ++i) {
+		t = (parseInt(mygroup[i].getAttribute("colspan")) + x).toString();
+		mygroup[i].setAttribute("colspan", t);
+	}
+	mytab.classList.toggle(toggle_className);
+}
+</script>
 {% endblock %}
 
 {% block content %}
@@ -54,7 +85,12 @@
 		</tbody>
 	</table>
 	<br /><br />{% if request_list %}
-	<table class="summary">
+	<div>
+		Show/hide columns:
+		<input type="button" onclick="toggle(2)" value="G" />
+		<input type="button" onclick="toggle(3)" value="Q" />
+	</div>
+	<table class="summary" id="summary_each">
 		<caption>
 			Summary for each user{%if agq %}<br />(A: accepted, G: grouped, Q: queued){% endif %}
 		</caption>
@@ -73,33 +109,33 @@
 		{# BEGIN thead #}{% if capsule_list %}
 		<thead>
 		<tr>
-			<th{% if agq %} rowspan="2"{% endif %}>User</th>{% for capsule in capsule_list %}
-			<th{% if agq %} colspan="3"{% endif %}>{{ capsule.1 }}</th>{% endfor %}
-			<th{% if agq %} colspan="3"{% endif %}>Sum</th>
-			<th{% if agq %} colspan="3"{% endif %}>Price</th>
+			<th{% if agq %} class="name" rowspan="2"{% endif %}>User</th>{% for capsule in capsule_list %}
+			<th{% if agq %} class="mycolgroup" colspan="3"{% endif %}>{{ capsule.1 }}</th>{% endfor %}
+			<th{% if agq %} class="mycolgroup" colspan="3"{% endif %}>Sum</th>
+			<th{% if agq %} class="mycolgroup" colspan="3"{% endif %}>Price</th>
 		</tr>{% endif %}{% if agq %}
 		<tr>{% for capsule in capsule_list %}
-			<th>A</th>
-			<th>G</th>
-			<th>Q</th>{% endfor %}
-			<th>A</th>
-			<th>G</th>
-			<th>Q</th>
-			<th>A</th>
-			<th>G</th>
-			<th>Q</th>
+			<th class="quantity accepted">A</th>
+			<th class="quantity grouped">G</th>
+			<th class="quantity queued">Q</th>{% endfor %}
+			<th class="sum accepted">A</th>
+			<th class="sum grouped">G</th>
+			<th class="sum queued">Q</th>
+			<th class="price accepted">A</th>
+			<th class="price grouped">G</th>
+			<th class="price queued">Q</th>
 		</tr>
 		</thead>{% endif %}{# END thead #}
 		{# BEGIN tfoot #}{% if total_row %}
 		<tfoot>
 		<tr>{% for i in total_row %}
-			<td>{{ i|intcomma }}</td>{% endfor %}
+			{% if forloop.first %}<td class="name">{{ i }}</td>{% else %}<td class="{% cycle "accepted" "grouped" "queued" %}">{{ i|intcomma }}</td>{% endif %}{% endfor %}
 		</tr>
 		</tfoot>{% endif %}{# END tfoot #}
 		{# BEGIN body #}{% if request_list %}
 		<tbody>	{% for request in request_list %}
 		<tr>{% for i in request %}
-			<td>{{ i|intcomma }}</td>{% endfor %}
+			{% if forloop.first %}<td class="name">{{ i }}</td>{% else %}<td class="{% cycle "accepted" "grouped" "queued" %}">{{ i|intcomma }}</td>{% endif %}{% endfor %}
 		</tr>{% endfor %}
 		</tbody>{% endif %}{# END tbody #}
 	</table>{% endif %}

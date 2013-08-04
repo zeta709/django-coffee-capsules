@@ -2,7 +2,27 @@ table td:first-child {
 	font-weight: bold;
 }
 
-table.summary tr > td:nth-child(3n+2) {
+table.summary td.accepted {
 	font-weight: bold;
 	color: green;
+}
+
+/* #summary_each */
+
+table#summary_each th {
+	min-width: 2em;
+}
+
+table#summary_each th.mycolgroup {
+	min-width: 2em;
+}
+
+table#summary_each.hide_grouped td.grouped,
+table#summary_each.hide_grouped th.grouped {
+	display: none;
+}
+
+table#summary_each.hide_queued td.queued,
+table#summary_each.hide_queued th.queued {
+	display: none;
 }
