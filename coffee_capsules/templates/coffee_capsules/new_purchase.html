@@ -60,6 +60,14 @@ window.__admin_media_prefix__ = "/static/admin/";
 			{% endfor %}
 		</tr></thead>
 		{% endif %}
+		<tbody>
+		{% if form.non_field_errors %}
+		<tr>
+			<td colspan="{{ form.visible_fields|length }}">
+			{{ form.non_field_errors.as_ul }}
+			</td>
+		</tr>
+		{% endif %}
 		<tr class="{% cycle row1,row2 %}">
 		{% for field in form.visible_fields %}
 			<td>
@@ -74,6 +82,7 @@ window.__admin_media_prefix__ = "/static/admin/";
 			</td>
 		{% endfor %}
 		</tr>
+		</tbody>
 	{% endfor %}
 	</table>
 	{# end tabluar formset22 #}
