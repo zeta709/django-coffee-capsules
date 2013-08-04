@@ -9,6 +9,10 @@ table.summary td.accepted {
 
 /* #summary_each */
 
+div#summary_each_toolbox {
+	text-align: center;
+}
+
 table#summary_each th {
 	min-width: 2em;
 }

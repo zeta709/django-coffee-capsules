@@ -85,14 +85,12 @@ function toggle(i) {
 		</tbody>
 	</table>
 	<br /><br />{% if request_list %}
-	<div>
-		Show/hide columns:
-		<input type="button" onclick="toggle(2)" value="G" />
-		<input type="button" onclick="toggle(3)" value="Q" />
-	</div>
-	<table class="summary" id="summary_each">
+	<table class="summary hide_queued hide_grouped" id="summary_each">
 		<caption>
 			Summary for each user{%if agq %}<br />(A: accepted, G: grouped, Q: queued){% endif %}
+			<br />Show/hide columns:
+			<input type="button" onclick="toggle(2)" value="G" />
+			<input type="button" onclick="toggle(3)" value="Q" />
 		</caption>
 		<colgroup>
 			<col class="name" />{% if capsule_list %}{% for capsule in capsule_list %}
@@ -110,9 +108,9 @@ function toggle(i) {
 		<thead>
 		<tr>
 			<th{% if agq %} class="name" rowspan="2"{% endif %}>User</th>{% for capsule in capsule_list %}
-			<th{% if agq %} class="mycolgroup" colspan="3"{% endif %}>{{ capsule.1 }}</th>{% endfor %}
-			<th{% if agq %} class="mycolgroup" colspan="3"{% endif %}>Sum</th>
-			<th{% if agq %} class="mycolgroup" colspan="3"{% endif %}>Price</th>
+			<th{% if agq %} class="mycolgroup" colspan="1"{% endif %}>{{ capsule.1 }}</th>{% endfor %}
+			<th{% if agq %} class="mycolgroup" colspan="1"{% endif %}>Sum</th>
+			<th{% if agq %} class="mycolgroup" colspan="1"{% endif %}>Price</th>
 		</tr>{% endif %}{% if agq %}
 		<tr>{% for capsule in capsule_list %}
 			<th class="quantity accepted">A</th>
