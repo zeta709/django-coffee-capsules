@@ -46,6 +46,7 @@ def new_purchase(request):
 	if request.method == 'POST':
 		has_error = False
 		formset = PurchaseFormSet(request.POST, prefix='purchase')
+		formset2 = PurchaseItemFormset(request.POST, prefix='purchaseitem')
 		if formset.is_valid():
 			purchase_instances = formset.save(commit=False)
 			if len(purchase_instances) is 0:
@@ -67,7 +68,6 @@ def new_purchase(request):
 			messages.success(request, 'Success')
 			return HttpResponseRedirect(reverse('coffee_capsules:index'))
 		else:
-			formset2 = PurchaseItemFormset(request.POST, prefix='purchaseitem')
 			messages.error(request, 'Error')
 			context = {
 				'formset': formset,

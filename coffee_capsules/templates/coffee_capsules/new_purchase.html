@@ -50,7 +50,6 @@ window.__admin_media_prefix__ = "/static/admin/";
 	{# tabluar formset2 #}
 	{# http://djangosnippets.org/snippets/1442/ #}
 	{{ formset2.management_form }}
-	{{ formset2.non_form_errors.as_ul }}
 	<table id="formset2" class="form">
 	{% for form in formset2.forms %}
 		{% if forloop.first %}
@@ -61,6 +60,15 @@ window.__admin_media_prefix__ = "/static/admin/";
 		</tr></thead>
 		{% endif %}
 		<tbody>
+		{% if forloop.first %}
+			{% if formset2.non_form_errors %}
+			<tr>
+			<td colspan="{{ form.visible_fields|length }}">
+				{{ formset2.non_form_errors.as_ul }}
+			</td>
+			</tr>
+			{% endif %}
+		{% endif %}
 		{% if form.non_field_errors %}
 		<tr>
 			<td colspan="{{ form.visible_fields|length }}">
@@ -85,7 +93,7 @@ window.__admin_media_prefix__ = "/static/admin/";
 		</tbody>
 	{% endfor %}
 	</table>
-	{# end tabluar formset22 #}
+	{# end tabluar formset2 #}
 	{% endif %}
 	{# endif formset2 #}
 	<br />
