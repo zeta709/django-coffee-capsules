@@ -34,8 +34,8 @@ class MyReadonlyAdmin(MyNoAddOrDeleteAdmin):
 
 class CapsuleAdmin(MyNoDeleteAdmin):
 	fields = ('name', 'price')
-	list_display = ('name', )
-	my_readonly_update = ('name', )
+	list_display = ('name', 'price')
+	#my_readonly_update = ('name', )
 
 # This is my idea!
 #
