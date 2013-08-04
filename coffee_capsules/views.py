@@ -39,31 +39,43 @@ def new_purchase(request):
 	template_name = 'coffee_capsules/new_purchase.html'
 	all_capsule_list = Capsule.objects.order_by('pk')
 	n_of_capsules = len(all_capsule_list)
-	#### formset factory
+	## Use formset factory
 	PurchaseFormSet = modelformset_factory(Purchase, form=PurchaseForm, extra=1)
-	PurchaseItemFormset = inlineformset_factory(Purchase, PurchaseItem, fk_name="purchase", extra=n_of_capsules)
-	#### post
+	PurchaseItemFormset = inlineformset_factory(Purchase, PurchaseItem,
+						    fk_name="purchase", extra=n_of_capsules)
+	#### POST method
 	if request.method == 'POST':
-		has_error = False
 		formset = PurchaseFormSet(request.POST, prefix='purchase')
 		formset2 = PurchaseItemFormset(request.POST, prefix='purchaseitem')
-		if formset.is_valid():
-			purchase_instances = formset.save(commit=False)
-			if len(purchase_instances) is 0:
+		## For a new instance creation, empty form should not be permitted
+		for i in range(0, formset.total_form_count()):
+		    formset.forms[i].empty_permitted = False
+		## Validation and save
+		has_error = False
+		while True:
+			if formset.is_valid() is False:
 				has_error = True
-				messages.error(request, 'Error: empty')
-			else:
-				formset2 = PurchaseItemFormset(request.POST, prefix='purchaseitem',
-							       instance=purchase_instances[0])
-				if formset2.is_valid():
-					purchase_instances[0].save()
-					purchaseitem_instances = formset2.save(commit=False)
-					for purchaseitem_instance in purchaseitem_instances:
-						purchaseitem_instance.save()
-				else:
-					has_error = True
-		else:
-			has_error = True
+				break
+			## Don't save the instance yet
+			purchase_instances = formset.save(commit=False)
+			if len(purchase_instances) != 1:
+				has_error = True
+				break
+			## PurchaseItemFormset requires purchase_instance
+			## for correct validation and save
+			formset2 = PurchaseItemFormset(request.POST, prefix='purchaseitem',
+						       instance=purchase_instances[0])
+			if formset2.is_valid() is False:
+				has_error = True
+				break
+			## Save all instances
+			purchase_instances[0].save()
+			purchaseitem_instances = formset2.save(commit=False)
+			for purchaseitem_instance in purchaseitem_instances:
+				purchaseitem_instance.save()
+			## Exit from loop
+			break
+		## HTTP response
 		if has_error is False:
 			messages.success(request, 'Success')
 			return HttpResponseRedirect(reverse('coffee_capsules:index'))
@@ -75,19 +87,19 @@ def new_purchase(request):
 				'capsule_list': all_capsule_list,
 			}
 			return render(request, template_name, context)
-	#### not post
+	#### NOT POST method
 	formset = PurchaseFormSet(queryset=Purchase.objects.none(), prefix='purchase')
-	## initial
+	## Initialize formset with all capsules
 	initial = []
 	for capsule in all_capsule_list:
 		initial.append({'capsule': capsule.id, 'price': capsule.price})
 	formset2 = PurchaseItemFormset(initial=initial, prefix='purchaseitem')
-	##### context
+	## context
 	context = {
 		'formset': formset,
 		'formset2': formset2,
 		'capsule_list': all_capsule_list,
-		}
+	}
 	return render(request, template_name, context)
 
 @login_required
