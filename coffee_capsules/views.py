@@ -13,6 +13,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 from django.forms.models import modelformset_factory
+from django.forms.models import inlineformset_factory
 
 from coffee_capsules.models import Capsule, Purchase, PurchaseItem, Request
 from coffee_capsules.forms import PurchaseForm
@@ -31,16 +32,57 @@ class IndexView(generic.ListView):
 
 from django.forms import forms
 @login_required
+@transaction.commit_on_success
 def new_purchase(request):
-	PurchaseFormSet = modelformset_factory(Purchase, form=PurchaseForm, extra=1)
-	if request.method == 'POST':
-		pass
-	formset = PurchaseFormSet(queryset=Purchase.objects.none())
 	template_name = 'coffee_capsules/new_purchase.html'
 	all_capsule_list = Capsule.objects.order_by('pk')
+	n_of_capsules = len(all_capsule_list)
+	#### formset factory
+	PurchaseFormSet = modelformset_factory(Purchase, form=PurchaseForm, extra=1)
+	PurchaseItemFormset = inlineformset_factory(Purchase, PurchaseItem, fk_name="purchase", extra=n_of_capsules)
+	#### post
+	if request.method == 'POST':
+		has_error = False
+		formset = PurchaseFormSet(request.POST)
+		if formset.is_valid():
+			purchase_instances = formset.save(commit=False)
+			if len(purchase_instances) is 0:
+				has_error = True
+				messages.error(request, 'Error: empty')
+			else:
+				formset2 = PurchaseItemFormset(request.POST, instance=purchase_instances[0])
+				if formset2.is_valid():
+					purchase_instances[0].save()
+					purchaseitem_instances = formset2.save(commit=False)
+					for purchaseitem_instance in purchaseitem_instances:
+						purchaseitem_instance.save()
+				else:
+					has_error = True
+		else:
+			has_error = True
+		if has_error is False:
+			messages.success(request, 'Success')
+			return HttpResponseRedirect(reverse('coffee_capsules:index'))
+		else:
+			formset2 = PurchaseItemFormset(request.POST)
+			messages.error(request, 'Error')
+			context = {
+				'formset': formset,
+				'formset2': formset2,
+				'capsule_list': all_capsule_list,
+			}
+			return render(request, template_name, context)
+	#### not post
+	formset = PurchaseFormSet(queryset=Purchase.objects.none())
+	## initial
+	initial = []
+	for capsule in all_capsule_list:
+		initial.append({'capsule': capsule.id, 'price': capsule.price})
+	formset2 = PurchaseItemFormset(initial=initial)
 	##### context
 	context = {
 		'formset': formset,
+		'formset2': formset2,
 		'capsule_list': all_capsule_list,
 		}
 	return render(request, template_name, context)

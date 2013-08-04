@@ -12,6 +12,8 @@ http://stackoverflow.com/questions/15643019/
 <link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %} "/>
 <link rel="stylesheet" type="text/css" href="{% static 'admin/css/global.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'admin/css/widgets.css' %}"/>
+{# overwrite my style again #}
+<link rel="stylesheet" type="text/css" href="{% static 'coffee_capsules/main.css' %}" />
 {% endblock %}
 
 {% block extra_scripts %}
@@ -34,8 +36,17 @@ window.__admin_media_prefix__ = "/static/admin/";
 <form method="post" action="">
 	{% csrf_token %}
 	<table>
+	<caption>Purchase</caption>
 	{{ formset }}
 	</table>
+	{% if formset2 %}
+	<br />
+	<table>
+	<caption>Purchase Items</caption>
+	{{ formset2 }}
+	</table>
+	{% endif %}
+	<br />
 	<input type="submit" value="Submit" />
 </form>
 <br /><br />

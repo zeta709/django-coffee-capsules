@@ -22,4 +22,9 @@
 {% else %}
 	<p>No purchases are available.</p>
 {% endif %}
+{% if user.is_authenticated %}
+<div style="text-align: center">
+<a href="{% url 'coffee_capsules:new_purchase' %}">Add a new purchase</a>
+{% endif %}
+</div>
 {% endblock %}
