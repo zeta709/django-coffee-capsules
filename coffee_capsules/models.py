@@ -13,6 +13,9 @@ class Capsule(models.Model):
 		return self.price
 	class Meta:
 		ordering = ['pk']
+	def clean(self):
+		if self.price < 0:
+			raise ValidationError('price < 0')
 
 class Purchase(models.Model):
 	name = models.CharField(max_length=64)
@@ -44,6 +47,15 @@ class PurchaseItem(models.Model):
 		unique_together = (("purchase", "capsule"))
 	def __unicode__(self):
 		return self.purchase.__unicode__() + ": " + self.capsule.__unicode__()
+	def clean(self):
+		if self.price < 0:
+			raise ValidationError('price < 0')
+		if self.quantity_accepted < 0:
+			raise ValidationError('quantity_accepted < 0')
+		if self.quantity_grouped < 0:
+			raise ValidationError('quantity_grouped < 0')
+		if self.quantity_queued < 0:
+			raise ValidationError('quantity_queued < 0')
 
 class Request(models.Model):
 	purchaseitem = models.ForeignKey(PurchaseItem)
