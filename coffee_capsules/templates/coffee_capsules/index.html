@@ -19,12 +19,15 @@
 			<td><a href="{% url 'coffee_capsules:detail' purchase.pk %}">View</a></td>
 		</tr>{% endfor %}
 	</table>
+	<div style="text-align: center">
+	<p>Note: date can be modified in admin page.</p>
+	</div>
 {% else %}
 	<p>No purchases are available.</p>
 {% endif %}
 {% if user.is_authenticated %}
 <div style="text-align: center">
-<a href="{% url 'coffee_capsules:new_purchase' %}">Add a new purchase</a>
+<p><a href="{% url 'coffee_capsules:new_purchase' %}">Add a new purchase</a></p>
 {% endif %}
 </div>
 {% endblock %}
