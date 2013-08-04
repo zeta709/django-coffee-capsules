@@ -1,0 +1,21 @@
+{% extends "coffee_capsules/base.html" %}
+{% load staticfiles %}
+{% load url from future %}
+
+{% block extra_styles %}
+<link rel="stylesheet" type="text/css" href="{% static 'coffee_capsules/detail.css' %}" />
+{% endblock %}
+
+{% block content %}
+{% if formset %}
+	<form method="post" action="">
+	<table>
+		{% csrf_token %}
+		{{ formset }}
+	</table>
+	</form>
+{% endif %}
+	<div class="footer">
+		<a href="{% url 'coffee_capsules:index' %}">back to list</a>
+	</div>
+{% endblock %}

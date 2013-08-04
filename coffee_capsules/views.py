@@ -103,6 +103,34 @@ def new_purchase(request):
 	return render(request, template_name, context)
 
 @login_required
+def request(request, myid):
+	template_name = 'coffee_capsules/request.html'
+	purchase = get_object_or_404(Purchase, pk=myid)
+	purchaseitem_list = purchase.purchaseitem_set.order_by('capsule__pk')
+	available_capsule_list = []
+	for purchaseitem in purchaseitem_list:
+		available_capsule_list.append(purchaseitem.capsule)
+	RequestFormset = modelformset_factory(Request, extra=len(available_capsule_list))
+	#### POST method
+	if request.method == 'POST':
+		pass
+	#### NOT POST method
+	## Initialize formset with all capsules
+	initial = []
+	for purchaseitem in purchaseitem_list:
+		initial.append({'purchaseitem': purchaseitem, 'user': request.user})
+	formset = RequestFormset(queryset=Request.objects.none(), initial=initial)
+	for form in formset.forms:
+		form.fields['purchaseitem'].widget = forms.TextInput()
+		form.fields['user'].widget = forms.TextInput()
+		form.fields['purchaseitem'].widget.attrs['readonly'] = 'readonly'
+		form.fields['user'].widget.attrs['readonly'] = 'readonly'
+	context = {
+		'formset': formset,
+	}
+	return render(request, template_name, context)
+
+@login_required
 def purchase_request(request, myid):
 	purchase = get_object_or_404(Purchase, pk=myid)
 	has_error = False
