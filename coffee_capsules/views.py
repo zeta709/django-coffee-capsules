@@ -45,14 +45,15 @@ def new_purchase(request):
 	#### post
 	if request.method == 'POST':
 		has_error = False
-		formset = PurchaseFormSet(request.POST)
+		formset = PurchaseFormSet(request.POST, prefix='purchase')
 		if formset.is_valid():
 			purchase_instances = formset.save(commit=False)
 			if len(purchase_instances) is 0:
 				has_error = True
 				messages.error(request, 'Error: empty')
 			else:
-				formset2 = PurchaseItemFormset(request.POST, instance=purchase_instances[0])
+				formset2 = PurchaseItemFormset(request.POST, prefix='purchaseitem',
+							       instance=purchase_instances[0])
 				if formset2.is_valid():
 					purchase_instances[0].save()
 					purchaseitem_instances = formset2.save(commit=False)
@@ -66,7 +67,7 @@ def new_purchase(request):
 			messages.success(request, 'Success')
 			return HttpResponseRedirect(reverse('coffee_capsules:index'))
 		else:
-			formset2 = PurchaseItemFormset(request.POST)
+			formset2 = PurchaseItemFormset(request.POST, prefix='purchaseitem')
 			messages.error(request, 'Error')
 			context = {
 				'formset': formset,
@@ -75,12 +76,12 @@ def new_purchase(request):
 			}
 			return render(request, template_name, context)
 	#### not post
-	formset = PurchaseFormSet(queryset=Purchase.objects.none())
+	formset = PurchaseFormSet(queryset=Purchase.objects.none(), prefix='purchase')
 	## initial
 	initial = []
 	for capsule in all_capsule_list:
 		initial.append({'capsule': capsule.id, 'price': capsule.price})
-	formset2 = PurchaseItemFormset(initial=initial)
+	formset2 = PurchaseItemFormset(initial=initial, prefix='purchaseitem')
 	##### context
 	context = {
 		'formset': formset,
