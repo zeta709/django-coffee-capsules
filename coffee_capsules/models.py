@@ -31,6 +31,9 @@ class Purchase(models.Model):
 					     help_text="Sum of all purchase items"
 					     " should be in units of this value."
 					     " (default: 50)")
+	u_unit = models.PositiveIntegerField('User unit', default=1,
+					     help_text="Each user can request"
+					     " each item in unit of this value.")
 	def is_not_open(self):
 		return self.begin_date > timezone.now()
 	def is_ended(self):
@@ -81,6 +84,10 @@ class Request(models.Model):
 	date = models.DateTimeField(auto_now=True)
 	#class Meta:
 	#	unique_together = (("purchaseitem", "user"))
+	def clean(self):
+		my_u_unit = self.purchaseitem.purchase.u_unit
+		if self.quantity_queued%my_u_unit != 0:
+			raise ValidationError("Each item should be multiles of %s" %(my_u_unit))
 
 class RequestGroup(models.Model):
 	purchaseitem = models.ForeignKey(PurchaseItem, editable=False)

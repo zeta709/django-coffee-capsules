@@ -116,6 +116,10 @@ def purchase_request(request, myid):
 				has_error = True
 				messages.error(request, 'Values cannot be negative')
 				break
+			if value%(purchase.u_unit) != 0:
+				has_error = True
+				messages.error(request, 'Each value should be multiples of ' + str(purchase.u_unit))
+				break
 			value_sum += value
 			value_list.append(value)
 	if has_error is False and value_sum <= 0:

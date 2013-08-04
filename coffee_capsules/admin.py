@@ -62,10 +62,10 @@ class PurchaseItemInline_1(admin.TabularInline):
 
 class PurchaseAdmin(MyAdmin):
 	fieldsets = [
-		(None, {'fields': ['name', 'g_unit', 'p_unit']}),
+		(None, {'fields': ['name', 'g_unit', 'p_unit', 'u_unit']}),
 		('Date information', {'fields': ['begin_date', 'end_date', 'is_closed']}),
 	]
-	list_display = ('name', 'begin_date', 'end_date', 'g_unit', 'p_unit', 'is_closed', )
+	list_display = ('name', 'begin_date', 'end_date', 'g_unit', 'p_unit', 'u_unit', 'is_closed', )
 	inlines = [PurchaseItemInline_0, PurchaseItemInline_1]
 
 class PurchaseItemAdmin(MyAdmin):
