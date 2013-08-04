@@ -9,10 +9,56 @@
 {% block content %}
 {% if formset %}
 	<form method="post" action="">
-	<table>
-		{% csrf_token %}
-		{{ formset }}
+	{% csrf_token %}
+	{# tabluar formset #}
+	{# http://djangosnippets.org/snippets/1442/ #}
+	{{ formset.management_form }}
+	<table id="formset" class="form">
+	{% for form in formset.forms %}
+		{% if forloop.first %}
+		<thead><tr>
+			{% for field in form.visible_fields %}
+			<th>{{ field.label|capfirst }}</th>
+			{% endfor %}
+		</tr></thead>
+		<tbody>
+		{% endif %}
+		{% if forloop.first %}
+			{% if formset.non_form_errors %}
+			<tr>
+			<td colspan="{{ form.visible_fields|length }}">
+				{{ formset.non_form_errors.as_ul }}
+			</td>
+			</tr>
+			{% endif %}
+		{% endif %}
+		{% if form.non_field_errors %}
+		<tr>
+			<td colspan="{{ form.visible_fields|length }}">
+			{{ form.non_field_errors.as_ul }}
+			</td>
+		</tr>
+		{% endif %}
+		<tr class="{% cycle row1,row2 %}">
+		{% for field in form.visible_fields %}
+			<td>
+			{# Include the hidden fields in the form #}
+			{% if forloop.first %}
+				{% for hidden in form.hidden_fields %}
+				{{ hidden }}
+				{% endfor %}
+			{% endif %}
+				{{ field.errors.as_ul }}
+				{{ field }}
+			</td>
+		{% endfor %}
+		</tr>
+		{% if forloop.last %}
+		</tbody>
+		{% endif %}
+	{% endfor %}
 	</table>
+	{# end tabluar formset #}
 	</form>
 {% endif %}
 	<div class="footer">

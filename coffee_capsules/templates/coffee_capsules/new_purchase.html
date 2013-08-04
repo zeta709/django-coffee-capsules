@@ -58,8 +58,8 @@ window.__admin_media_prefix__ = "/static/admin/";
 			<th>{{ field.label|capfirst }}</th>
 			{% endfor %}
 		</tr></thead>
-		{% endif %}
 		<tbody>
+		{% endif %}
 		{% if forloop.first %}
 			{% if formset2.non_form_errors %}
 			<tr>
@@ -90,7 +90,9 @@ window.__admin_media_prefix__ = "/static/admin/";
 			</td>
 		{% endfor %}
 		</tr>
+		{% if forloop.last %}
 		</tbody>
+		{% endif %}
 	{% endfor %}
 	</table>
 	{# end tabluar formset2 #}
