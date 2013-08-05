@@ -39,24 +39,6 @@ function toggle(i) {
 {% endblock %}
 
 {% block content %}
-	{# FORM #}
-	{% if purchaseitem_list %}
-	<form action="{% url 'coffee_capsules:purchase_request' purchase.id %}" method="post">
-		{% csrf_token %}
-		<fieldset>
-			<legend>Request Form</legend>
-			<table>
-			{% for purchaseitem in purchaseitem_list %}
-			<tr>
-			<td><label for="text_{{ forloop.counter }}">{{ purchaseitem.capsule.name }}</label></td>
-			<td><input type="number" min="0" max="200" value="0" name="capsule_{{ purchaseitem.capsule.id }}" id="text_{{ forloop.counter }}" /></td>
-			</tr>
-			{% endfor %}
-			</table>
-		</fieldset>
-		<input type="submit" value="Submit" />
-	</form><br /><br />
-	{% endif %}
 	{# TABLES #}
 	<table>
 		<caption>
@@ -137,6 +119,9 @@ function toggle(i) {
 		</tr>{% endfor %}
 		</tbody>{% endif %}{# END tbody #}
 	</table>{% endif %}
+	<div style="text-align: center">
+		<br /><a href="{% url 'coffee_capsules:request' purchase.pk %}">Order</a>
+	</div>
 	<div class="footer">
 		<a href="{% url 'coffee_capsules:index' %}">back to list</a>
 	</div>

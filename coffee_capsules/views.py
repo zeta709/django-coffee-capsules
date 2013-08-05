@@ -140,50 +140,6 @@ def request(request, myid):
 	return render(request, template_name, context)
 
 @login_required
-def purchase_request(request, myid):
-	purchase = get_object_or_404(Purchase, pk=myid)
-	has_error = False
-	if purchase.is_not_open():
-		has_error = True
-		messages.error(request, 'The purchase is not yet open')
-	if purchase.is_ended():
-		has_error = True
-		messages.error(request, 'The purchase is aleady ended')
-	if has_error is False:
-		purchaseitem_list = purchase.purchaseitem_set.order_by('capsule__pk')
-		value_list = []
-		value_sum = 0
-		for purchaseitem in purchaseitem_list:
-			name = "capsule_" + str(purchaseitem.capsule.id)
-			try:
-				value = int(request.POST[name])
-			except ValueError:
-				value = 0
-				has_error = True
-				messages.error(request, 'Wrong values')
-				break
-			if value < 0:
-				has_error = True
-				messages.error(request, 'Values cannot be negative')
-				break
-			if value%(purchase.u_unit) != 0:
-				has_error = True
-				messages.error(request, 'Each value should be multiples of ' + str(purchase.u_unit))
-				break
-			value_sum += value
-			value_list.append(value)
-	if has_error is False and value_sum <= 0:
-		has_error = True
-		messages.error(request, 'Sum of values must be greather than 0')
-	if has_error is False:
-		messages.success(request, 'Success')
-		for i, purchaseitem in enumerate(purchaseitem_list):
-			if value_list[i] > 0:
-				new_request = Request(purchaseitem=purchaseitem, user=request.user, quantity_queued=value_list[i])
-				new_request.save()
-	return HttpResponseRedirect(reverse('coffee_capsules:detail', args=(purchase.id,)))
-
-@login_required
 @transaction.commit_on_success
 def detail(request, myid):
 	agq = True
