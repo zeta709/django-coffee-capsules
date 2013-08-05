@@ -32,5 +32,15 @@ class MyRequestForm(forms.ModelForm):
 		self.fields['purchaseitem'].widget.attrs['readonly'] = 'readonly'
 		self.fields['purchaseitem'].label = 'Item'
 		self.fields['quantity_queued'].label = 'Quantity'
-		print(self.fields['purchaseitem'].widget)
+	def clean(self):
+		cleaned_data = super(MyRequestForm, self).clean()
+		purchaseitem = cleaned_data.get("purchaseitem")
+		purchase = purchaseitem.purchase
+		if purchase.is_not_open():
+			raise forms.ValidationError("The purchase is not yet open.")
+		if purchase.is_ended():
+			raise forms.ValidationError("The purchase is aleady ended.")
+		if purchase.is_closed:
+			raise forms.ValidationError("The purchase is closed.")
+		return cleaned_data
 

@@ -103,6 +103,7 @@ def new_purchase(request):
 	return render(request, template_name, context)
 
 @login_required
+@transaction.commit_on_success
 def request(request, myid):
 	template_name = 'coffee_capsules/request.html'
 	purchase = get_object_or_404(Purchase, pk=myid)
@@ -113,7 +114,20 @@ def request(request, myid):
 	RequestFormset = modelformset_factory(Request, form=MyRequestForm, extra=len(available_capsule_list))
 	#### POST method
 	if request.method == 'POST':
-		pass
+		formset = RequestFormset(request.POST)
+		if formset.is_valid():
+			request_instances = formset.save(commit=False)
+			for request_instance in request_instances:
+				request_instance.user = request.user
+				request_instance.save()
+			messages.success(request, 'Success')
+			return HttpResponseRedirect(reverse('coffee_capsules:detail', args=(purchase.id,)))
+		else:
+			messages.error(request, 'Error')
+			context = {
+				'formset': formset,
+			}
+			return render(request, template_name, context)
 	#### NOT POST method
 	## Initialize formset with all capsules
 	initial = []
