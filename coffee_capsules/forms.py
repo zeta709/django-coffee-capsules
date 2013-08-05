@@ -32,6 +32,16 @@ class MyRequestForm(forms.ModelForm):
 		self.fields['purchaseitem'].widget.attrs['readonly'] = 'readonly'
 		self.fields['purchaseitem'].label = 'Item'
 		self.fields['quantity_queued'].label = 'Quantity'
+	
+	def clean_quantity_queued(self):
+		qty = self.cleaned_data['quantity_queued']
+		my_u_unit = self.cleaned_data['purchaseitem'].purchase.u_unit
+		if qty < 0:
+			raise forms.ValidationError("Values cannot be negative.")
+		if qty%my_u_unit != 0:
+			raise forms.ValidationError('Each value should be multiples of ' + str(my_u_unit))
+		return qty
+
 	def clean(self):
 		cleaned_data = super(MyRequestForm, self).clean()
 		purchaseitem = cleaned_data.get("purchaseitem")
