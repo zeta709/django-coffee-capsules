@@ -182,7 +182,8 @@ def detail(request, myid):
 	query_str_capsule = 'SELECT coffee_capsules_capsule.id, name FROM coffee_capsules_capsule'\
 			+ ' INNER JOIN "coffee_capsules_purchaseitem" ON '\
 			+ ' ("coffee_capsules_capsule"."id" = "coffee_capsules_purchaseitem"."capsule_id")'\
-			+ ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s'
+			+ ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s'\
+			+ ' ORDER BY coffee_capsules_capsule.id'
 	cursor.execute(query_str_capsule, [myid])
 	capsule_list = cursor.fetchall()
 	#print("==capsule_list==")
@@ -196,7 +197,8 @@ def detail(request, myid):
 			+ ' FROM coffee_capsules_capsule'\
 			+ ' INNER JOIN "coffee_capsules_purchaseitem" ON '\
 			+ ' ("coffee_capsules_capsule"."id" = "coffee_capsules_purchaseitem"."capsule_id")'\
-			+ ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s)'
+			+ ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s'\
+			+ ' ORDER BY coffee_capsules_capsule.id)'
 		cursor.execute(query_str_0, [myid])
 		select_str = cursor.fetchall()[0][0]
 	else:
@@ -208,7 +210,8 @@ def detail(request, myid):
 			+ ' FROM coffee_capsules_capsule'\
 			+ ' INNER JOIN "coffee_capsules_purchaseitem" ON '\
 			+ ' ("coffee_capsules_capsule"."id" = "coffee_capsules_purchaseitem"."capsule_id")'\
-			+ ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s)'
+			+ ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s'\
+			+ ' ORDER BY coffee_capsules_capsule.id)'
 		cursor.execute(query_str_0, [myid])
 		select_str = cursor.fetchall()[0][0]
 	if select_str is None:
