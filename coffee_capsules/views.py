@@ -16,7 +16,7 @@ from django.forms.models import modelformset_factory
 from django.forms.models import inlineformset_factory
 
 from coffee_capsules.models import Capsule, Purchase, PurchaseItem, Request
-from coffee_capsules.forms import PurchaseForm
+from coffee_capsules.forms import PurchaseForm, MyRequestForm
 
 from django.utils import timezone
 
@@ -110,7 +110,7 @@ def request(request, myid):
 	available_capsule_list = []
 	for purchaseitem in purchaseitem_list:
 		available_capsule_list.append(purchaseitem.capsule)
-	RequestFormset = modelformset_factory(Request, extra=len(available_capsule_list))
+	RequestFormset = modelformset_factory(Request, form=MyRequestForm, extra=len(available_capsule_list))
 	#### POST method
 	if request.method == 'POST':
 		pass
@@ -120,11 +120,6 @@ def request(request, myid):
 	for purchaseitem in purchaseitem_list:
 		initial.append({'purchaseitem': purchaseitem, 'user': request.user})
 	formset = RequestFormset(queryset=Request.objects.none(), initial=initial)
-	for form in formset.forms:
-		form.fields['purchaseitem'].widget = forms.TextInput()
-		form.fields['user'].widget = forms.TextInput()
-		form.fields['purchaseitem'].widget.attrs['readonly'] = 'readonly'
-		form.fields['user'].widget.attrs['readonly'] = 'readonly'
 	context = {
 		'formset': formset,
 	}
