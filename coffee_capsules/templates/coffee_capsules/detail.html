@@ -69,22 +69,25 @@ function toggle(i) {
 	<br /><br />{% if request_list %}
 	<table class="summary hide_queued hide_grouped" id="summary_each">
 		<caption>
-			Summary for each user{%if agq %}<br />(A: accepted, G: grouped, Q: queued){% endif %}
+			Summary for each user
+			{% if agq %}
+			<br />(A: accepted, G: grouped, Q: queued)
 			<br />Show/hide columns:
 			<input type="button" onclick="toggle(2)" value="G" />
 			<input type="button" onclick="toggle(3)" value="Q" />
+			{% endif %}
 		</caption>
 		<colgroup>
 			<col class="name" />{% if capsule_list %}{% for capsule in capsule_list %}
-			<col class="quantity accepted" />
-			<col class="quantity grouped" />
+			{% if agq %}<col class="quantity accepted" />
+			<col class="quantity grouped" />{% endif  %}
 			<col class="quantity queued" />{% endfor %}{% endif %}
 			<col class="sum accepted" />
-			<col class="sum grouped" />
-			<col class="sum queued" />
+			{% if agq %}<col class="sum grouped" />
+			<col class="sum queued" />{% endif %}
 			<col class="price accepted" />
-			<col class="price grouped" />
-			<col class="price queued" />
+			{% if agq %}<col class="price grouped" />
+			<col class="price queued" />{% endif %}
 		</colgroup>
 		{# BEGIN thead #}{% if capsule_list %}
 		<thead>
@@ -109,13 +112,15 @@ function toggle(i) {
 		{# BEGIN tfoot #}{% if total_row %}
 		<tfoot>
 		<tr>{% for i in total_row %}
-			{% if forloop.first %}<td class="name">{{ i }}</td>{% else %}<td class="{% cycle "accepted" "grouped" "queued" %}">{{ i|intcomma }}</td>{% endif %}{% endfor %}
+			{% if forloop.first %}<td class="name">{{ i }}</td>
+			{% else %}<td{% if agq %} class="{% cycle "accepted" "grouped" "queued" %}"{% endif %}>{{ i|intcomma }}</td>{% endif %}{% endfor %}
 		</tr>
 		</tfoot>{% endif %}{# END tfoot #}
 		{# BEGIN body #}{% if request_list %}
 		<tbody>	{% for request in request_list %}
 		<tr>{% for i in request %}
-			{% if forloop.first %}<td class="name">{{ i }}</td>{% else %}<td class="{% cycle "accepted" "grouped" "queued" %}">{{ i|intcomma }}</td>{% endif %}{% endfor %}
+			{% if forloop.first %}<td class="name">{{ i }}</td>
+			{% else %}<td{% if agq %} class="{% cycle "accepted" "grouped" "queued" %}"{% endif %}>{{ i|intcomma }}</td>{% endif %}{% endfor %}
 		</tr>{% endfor %}
 		</tbody>{% endif %}{# END tbody #}
 	</table>{% endif %}
