@@ -10,6 +10,7 @@
 			<th>End</th>
 			<th>Status</th>
 			<th>Detail</th>
+			<th>Order</th>
 		</tr>{% for purchase in purchase_list %}
 		<tr>
 			<td>{{ purchase.name }}</td>
@@ -17,6 +18,7 @@
 			<td>{{ purchase.end_date }}</td>
 			<td>{% if purchase.is_closed %}Closed{% elif purchase.is_ended %}Ended{% elif purchase.is_not_open %}Not open{% else %}Open{% endif %}</td>
 			<td><a href="{% url 'coffee_capsules:detail' purchase.pk %}">View</a></td>
+			<td><a href="{% url 'coffee_capsules:request' purchase.pk %}">Order</a></td>
 		</tr>{% endfor %}
 	</table>
 	<div style="text-align: center">
