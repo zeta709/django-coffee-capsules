@@ -204,21 +204,34 @@ def detail(request, myid):
     #### get pivot table
     query_str_1 = 'SELECT auth_user.username, ' + select_str
     if not agq:
-        query_str_1 += ', SUM(coffee_capsules_request.quantity_accepted) AS SUM_a'\
-            + ', SUM(coffee_capsules_purchaseitem.price * coffee_capsules_request.quantity_accepted) AS GT_a'
+        query_str_1 += (
+            ', SUM(coffee_capsules_request.quantity_accepted) AS SUM_a'
+            ', SUM(coffee_capsules_purchaseitem.price'
+            ' * coffee_capsules_request.quantity_accepted) AS GT_a'
+        )
     else:
-        query_str_1 += ', SUM(coffee_capsules_request.quantity_accepted) AS SUM_a'\
-            + ', SUM(coffee_capsules_request.quantity_grouped) AS SUM_a'\
-            + ', SUM(coffee_capsules_request.quantity_queued) AS SUM_a'\
-            + ', SUM(coffee_capsules_purchaseitem.price * coffee_capsules_request.quantity_accepted) AS GT_a'\
-            + ', SUM(coffee_capsules_purchaseitem.price * coffee_capsules_request.quantity_grouped) AS GT_a'\
-            + ', SUM(coffee_capsules_purchaseitem.price * coffee_capsules_request.quantity_queued) AS GT_a'
-    query_str_1 += ' FROM "coffee_capsules_request"'\
-        + ' INNER JOIN "coffee_capsules_purchaseitem" ON '\
-        + ' ("coffee_capsules_request"."purchaseitem_id" = "coffee_capsules_purchaseitem"."id")'\
-        + ' INNER JOIN "auth_user" ON ("coffee_capsules_request"."user_id" = "auth_user"."id")'\
-        + ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s'\
-        + ' GROUP BY coffee_capsules_request.user_id'
+        query_str_1 += (
+            ', SUM(coffee_capsules_request.quantity_accepted) AS SUM_a'
+            ', SUM(coffee_capsules_request.quantity_grouped) AS SUM_g'
+            ', SUM(coffee_capsules_request.quantity_queued) AS SUM_q'
+            ', SUM(coffee_capsules_purchaseitem.price'
+            ' * coffee_capsules_request.quantity_accepted) AS GT_a'
+            ', SUM(coffee_capsules_purchaseitem.price'
+            ' * coffee_capsules_request.quantity_grouped) AS GT_g'
+            ', SUM(coffee_capsules_purchaseitem.price'
+            ' * coffee_capsules_request.quantity_queued) AS GT_q'
+        )
+    # fi
+    query_str_1 += (
+        ' FROM "coffee_capsules_request"'
+        ' INNER JOIN "coffee_capsules_purchaseitem" ON '
+        ' ("coffee_capsules_request"."purchaseitem_id"'
+        ' = "coffee_capsules_purchaseitem"."id")'
+        ' INNER JOIN "auth_user" ON'
+        ' ("coffee_capsules_request"."user_id" = "auth_user"."id")'
+        ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s'
+        ' GROUP BY coffee_capsules_request.user_id'
+    )
     cursor.execute(query_str_1, [myid])
     request_list = cursor.fetchall()
     #### get total row
