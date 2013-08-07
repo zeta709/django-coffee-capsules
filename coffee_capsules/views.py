@@ -235,14 +235,8 @@ def detail(request, myid):
     cursor.execute(query_str_1, [myid])
     request_list = cursor.fetchall()
     #### get total row
-    zipped = zip(*request_list)
-    total_row = [0 for i in range(len(zipped))]
-    for i in range(1, len(zipped)):
-        total_row[i] = zipped[i][0]
-        for j in range(1, len(zipped[i])):
-            total_row[i] += zipped[i][1]
-    if len(zipped) > 0:
-        total_row[0] = "Total"
+    total_row = [sum(x) if i > 0 else 'Total' for i, x
+                 in enumerate(zip(*request_list))]
     ##### context
     context = {
         'agq': agq,
