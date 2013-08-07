@@ -1,9 +1,8 @@
 from django.core.urlresolvers import reverse
 
-from django.http import HttpResponseRedirect, HttpResponse
-from django.http import Http404
+from django.http import HttpResponseRedirect
 
-from django.shortcuts import render, get_object_or_404, render_to_response
+from django.shortcuts import render, get_object_or_404
 from django.views import generic
 
 from django.db import connection, transaction
@@ -28,13 +27,6 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         return Purchase.objects.order_by('-pk')
-
-
-#class DetailView(generic.ListView):
-#    template_name = 'context_object_name/detail.html'
-#    context_object_name = 'purchase_item_list'
-#    def get_queryset(self):
-#        return PurchaseItem.objects.filter(pk=pk)
 
 
 @login_required
@@ -167,9 +159,6 @@ def detail(request, myid):
             + ' ORDER BY coffee_capsules_capsule.id'
     cursor.execute(query_str_capsule, [myid])
     capsule_list = cursor.fetchall()
-    #print("==capsule_list==")
-    #print(capsule_list)
-    #print("================")
     #### make query string for selection
     if not agq:
         query_str_0 = 'SELECT group_concat(ca, ", ") AS gc'\
@@ -217,15 +206,9 @@ def detail(request, myid):
         + ' GROUP BY coffee_capsules_request.user_id'
     cursor.execute(query_str_1, [myid])
     request_list = cursor.fetchall()
-    #print("==request_list==")
-    #for i in request_list:
-    #    print(i)
-    #    print("----------------")
-    #print("================")
     #### get total row
     zipped = zip(*request_list)
     total_row = [0 for i in range(len(zipped))]
-    #print(zipped)
     for i in range(1, len(zipped)):
         total_row[i] = zipped[i][0]
         for j in range(1, len(zipped[i])):
