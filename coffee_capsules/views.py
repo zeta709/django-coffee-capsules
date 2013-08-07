@@ -51,7 +51,7 @@ def new_purchase(request):
         ## Validation and save
         has_error = False
         while True:
-            if formset.is_valid() is False:
+            if not formset.is_valid():
                 has_error = True
                 break
             ## Don't save the instance yet
@@ -63,7 +63,7 @@ def new_purchase(request):
             ## for correct validation and save
             formset2 = PurchaseItemFormset(request.POST, prefix='purchaseitem',
                                instance=purchase_instances[0])
-            if formset2.is_valid() is False:
+            if not formset2.is_valid():
                 has_error = True
                 break
             ## Save all instances
@@ -74,7 +74,7 @@ def new_purchase(request):
             ## Exit from loop
             break
         ## HTTP response
-        if has_error is False:
+        if not has_error:
             messages.success(request, 'Success')
             return HttpResponseRedirect(reverse('coffee_capsules:index'))
         else:
