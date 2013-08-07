@@ -152,38 +152,53 @@ def detail(request, myid):
     #### raw db connection
     cursor = connection.cursor()
     #### get capsule list
-    query_str_capsule = 'SELECT coffee_capsules_capsule.id, name FROM coffee_capsules_capsule'\
-            + ' INNER JOIN "coffee_capsules_purchaseitem" ON '\
-            + ' ("coffee_capsules_capsule"."id" = "coffee_capsules_purchaseitem"."capsule_id")'\
-            + ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s'\
-            + ' ORDER BY coffee_capsules_capsule.id'
+    query_str_capsule = (
+        'SELECT "coffee_capsules_capsule"."id", "name"'
+        ' FROM "coffee_capsules_capsule"'
+        ' INNER JOIN "coffee_capsules_purchaseitem" ON '
+        ' ("coffee_capsules_capsule"."id"'
+        ' = "coffee_capsules_purchaseitem"."capsule_id")'
+        ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s'
+        ' ORDER BY "coffee_capsules_capsule"."id"'
+    )
     cursor.execute(query_str_capsule, [myid])
     capsule_list = cursor.fetchall()
     #### make query string for selection
+    aggregate_str = (
+        '"SUM(CASE WHEN capsule_id=" || coffee_capsules_capsule.id'
+        ' || " THEN coffee_capsules_request.{0}'
+        ' ELSE 0 END) AS {1}"'
+        ' || coffee_capsules_capsule.id AS {2}'
+    )
+    from_str = (
+        ' FROM "coffee_capsules_capsule"'
+        ' INNER JOIN "coffee_capsules_purchaseitem" ON '
+        ' ("coffee_capsules_capsule"."id"'
+        ' = "coffee_capsules_purchaseitem"."capsule_id")'
+        ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s'
+        ' ORDER BY "coffee_capsules_capsule"."id"'
+    )
     if not agq:
-        query_str_0 = 'SELECT group_concat(ca, ", ") AS gc'\
-            + ' FROM (SELECT'\
-            + ' "SUM(CASE WHEN capsule_id=" || coffee_capsules_capsule.id || " THEN coffee_capsules_request.quantity_accepted ELSE 0 END) AS qty_a_" || coffee_capsules_capsule.id AS ca'\
-            + ' FROM coffee_capsules_capsule'\
-            + ' INNER JOIN "coffee_capsules_purchaseitem" ON '\
-            + ' ("coffee_capsules_capsule"."id" = "coffee_capsules_purchaseitem"."capsule_id")'\
-            + ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s'\
-            + ' ORDER BY coffee_capsules_capsule.id)'
-        cursor.execute(query_str_0, [myid])
-        select_str = cursor.fetchall()[0][0]
+        inner_str = 'SELECT '\
+                + aggregate_str.format('quantity_accepted', 'qty_a_', 'ca')\
+                + from_str
+        query_str_0 = 'SELECT'\
+                + ' group_concat(ca, ", ") AS gc'\
+                + ' FROM (' + inner_str + ')'
     else:
-        query_str_0 = 'SELECT group_concat(ca || ", " || cg || ", " || cq, ", ") AS gc'\
-            + ' FROM (SELECT'\
-            + ' "SUM(CASE WHEN capsule_id=" || coffee_capsules_capsule.id || " THEN coffee_capsules_request.quantity_accepted ELSE 0 END) AS qty_a_" || coffee_capsules_capsule.id AS ca'\
-            + ', "SUM(CASE WHEN capsule_id=" || coffee_capsules_capsule.id || " THEN coffee_capsules_request.quantity_grouped ELSE 0 END) AS qty_g_" || coffee_capsules_capsule.id AS cg'\
-            + ', "SUM(CASE WHEN capsule_id=" || coffee_capsules_capsule.id || " THEN coffee_capsules_request.quantity_queued ELSE 0 END) AS qty_q_" || coffee_capsules_capsule.id AS cq'\
-            + ' FROM coffee_capsules_capsule'\
-            + ' INNER JOIN "coffee_capsules_purchaseitem" ON '\
-            + ' ("coffee_capsules_capsule"."id" = "coffee_capsules_purchaseitem"."capsule_id")'\
-            + ' WHERE "coffee_capsules_purchaseitem"."purchase_id" = %s'\
-            + ' ORDER BY coffee_capsules_capsule.id)'
-        cursor.execute(query_str_0, [myid])
-        select_str = cursor.fetchall()[0][0]
+        inner_str = 'SELECT '\
+                + aggregate_str.format('quantity_accepted', 'qty_a_', 'ca')\
+                + ', '\
+                + aggregate_str.format('quantity_grouped', 'qty_g_', 'cg')\
+                + ', '\
+                + aggregate_str.format('quantity_queued', 'qty_q_', 'cq')\
+                + from_str
+        query_str_0 = 'SELECT'\
+                + ' group_concat(ca || ", " || cg || ", " || cq, ", ") AS gc'\
+                + ' FROM (' + inner_str + ')'
+    # fi
+    cursor.execute(query_str_0, [myid])
+    select_str = cursor.fetchall()[0][0]
     if select_str is None:
         select_str = 'COUNT(*)'
     #### get pivot table
