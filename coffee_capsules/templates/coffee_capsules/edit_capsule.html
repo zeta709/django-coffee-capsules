@@ -1,0 +1,18 @@
+{% extends "coffee_capsules/base.html" %}
+{% load staticfiles %}
+{% load url from future %}
+
+{% block content %}
+{% if form %}
+	<form method="post" action="">
+	{% csrf_token %}
+	<table>
+		{{ form }}
+	</table>
+	<input type="submit" value="Submit" />
+	</form>
+{% endif %}
+	<div class="footer">
+		<a href="{% url 'coffee_capsules:index' %}">back to list</a>
+	</div>
+{% endblock %}

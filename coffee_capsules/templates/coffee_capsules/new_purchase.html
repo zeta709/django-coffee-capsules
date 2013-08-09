@@ -101,26 +101,6 @@ window.__admin_media_prefix__ = "/static/admin/";
 	<br />
 	<input type="submit" value="Submit" />
 </form>
-<div style="text-align: center">
-<p>Note: new capsules can be added in admin page.</p>
-</div>
-<br /><br />
-{% endif %}
-
-{% if capsule_list %}
-	<table>
-		<caption>Default prices</caption>
-		<tr>
-			<th>Name</th>
-			<th>Price</th>
-		</tr>{% for capsule in capsule_list %}
-		<tr>
-			<td>{{ capsule.name }}</td>
-			<td>{{ capsule.price }}</td>
-		</tr>{% endfor %}
-	</table>
-{% else %}
-	<p>No capsules are available. (Capsules can be added in admin page.)</p>
 {% endif %}
 	<div class="footer">
 		<a href="{% url 'coffee_capsules:index' %}">back to list</a>

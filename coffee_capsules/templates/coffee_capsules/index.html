@@ -29,7 +29,10 @@
 {% endif %}
 {% if user.is_authenticated %}
 <div style="text-align: center">
-<p><a href="{% url 'coffee_capsules:new_purchase' %}">Add a new purchase</a></p>
+<p>
+<a href="{% url 'coffee_capsules:new_purchase' %}">Add a new purchase</a><br />
+<a href="{% url 'coffee_capsules:capsule_list' %}">Edit capsules</a>
+</p>
 {% endif %}
 </div>
 {% endblock %}

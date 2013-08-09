@@ -10,8 +10,10 @@ from django.db import connection, transaction
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required
 
 from django.forms import forms
+from django.forms.models import modelform_factory
 from django.forms.models import modelformset_factory
 from django.forms.models import inlineformset_factory
 
@@ -29,7 +31,42 @@ class IndexView(generic.ListView):
         return Purchase.objects.order_by('-pk')
 
 
+class CapsuleList(generic.ListView):
+    template_name = 'coffee_capsules/capsule_list.html'
+    context_object_name = 'capsule_list'
+
+    def get_queryset(self):
+        return Capsule.objects.order_by('pk')
+
+
 @login_required
+@permission_required('coffee_capsules.add_capsule', raise_exception=True)
+def edit_capsule(request, myid=None):
+    template_name = 'coffee_capsules/edit_capsule.html'
+    if myid:
+        capsule = get_object_or_404(Capsule, pk=myid)
+    else:
+        capsule = Capsule()
+    # fi
+    CapsuleForm = modelform_factory(Capsule)
+    #### POST method
+    if request.method == 'POST':
+        form = CapsuleForm(request.POST, instance=capsule)
+        if form.is_valid():
+            form.save()
+        else:
+            context = {'form': form,}
+            return render(request, template_name, context)
+        # fi
+        return HttpResponseRedirect(reverse('coffee_capsules:capsule_list'))
+    #### NOT POST method
+    form = CapsuleForm(instance=capsule)
+    context = {'form': form,}
+    return render(request, template_name, context)
+
+
+@login_required
+@permission_required('coffee_capsules.add_purchase', raise_exception=True)
 @transaction.commit_on_success
 def new_purchase(request):
     template_name = 'coffee_capsules/new_purchase.html'

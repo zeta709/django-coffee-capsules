@@ -1,0 +1,27 @@
+{% extends "coffee_capsules/base.html" %}
+{% load url from future %}
+
+{% block content %}
+{% if capsule_list %}
+	<table>
+		<caption>Capsules</caption>
+		<tr>
+			<th>Name</th>
+			<th>Price</th>
+		</tr>{% for capsule in capsule_list %}
+		<tr>
+			<td><a href="{% url 'coffee_capsules:edit_capsule' capsule.pk %}">{{ capsule.name }}</td>
+			<td>{{ capsule.price }}</td>
+		</tr>{% endfor %}
+	</table>
+{% else %}
+	<p>No capsules are available. (Capsules can be added in admin page.)</p>
+{% endif %}
+{% if user.is_authenticated %}
+<div style="text-align: center">
+<p><a href="{% url 'coffee_capsules:add_capsule' %}">Add a new capsule</a></p>
+{% endif %}
+<div class="footer">
+	<a href="{% url 'coffee_capsules:index' %}">back to list</a>
+</div>
+{% endblock %}
