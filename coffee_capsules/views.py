@@ -243,7 +243,7 @@ def detail(request, myid):
     if select_str is None:
         select_str = 'COUNT(*)'
     #### get pivot table
-    query_str_1 = 'SELECT auth_user.username, ' + select_str
+    query_str_1 = 'SELECT auth_user.username'
     if not agq:
         query_str_1 += (
             ', SUM(coffee_capsules_request.quantity_accepted) AS SUM_a'
@@ -262,6 +262,7 @@ def detail(request, myid):
             ', SUM(coffee_capsules_purchaseitem.price'
             ' * coffee_capsules_request.quantity_queued) AS GT_q'
         )
+    query_str_1 += ', ' + select_str
     # fi
     query_str_1 += (
         ' FROM "coffee_capsules_request"'
