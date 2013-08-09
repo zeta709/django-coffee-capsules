@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.admin import widgets
 #from django.forms.extras import SelectDateWidget
 
-from coffee_capsules.models import Purchase, Request
+from coffee_capsules.models import Purchase, PurchaseItem, Request
 from coffee_capsules.widgets import SelectedReadonly
 
 
@@ -16,6 +16,22 @@ class PurchaseForm(forms.ModelForm):
         super(PurchaseForm, self).__init__(*args, **kwargs)
         self.fields['begin_date'].widget = widgets.AdminSplitDateTime()
         self.fields['end_date'].widget = widgets.AdminSplitDateTime()
+
+
+class PurchaseItemForm(forms.ModelForm):
+    #default_price = forms.CharField()
+
+    class Meta:
+        model = PurchaseItem
+        widgets = {
+            'capsule': SelectedReadonly(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(PurchaseItemForm, self).__init__(*args, **kwargs)
+        self.fields['capsule'].widget.attrs['readonly'] = 'readonly'
+        #self.fields['default_price'].widget = forms.HiddenInput()
+        #self.fields['default_price'].widget.attrs['readonly'] = 'readonly'
 
 
 class MyRequestForm(forms.ModelForm):

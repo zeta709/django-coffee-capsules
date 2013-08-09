@@ -18,7 +18,7 @@ from django.forms.models import modelformset_factory
 from django.forms.models import inlineformset_factory
 
 from coffee_capsules.models import Capsule, Purchase, PurchaseItem, Request
-from coffee_capsules.forms import PurchaseForm, MyRequestForm
+from coffee_capsules.forms import PurchaseForm, PurchaseItemForm, MyRequestForm
 
 from django.utils import timezone
 
@@ -76,6 +76,7 @@ def new_purchase(request):
     PurchaseFormSet = modelformset_factory(Purchase, form=PurchaseForm,
                                            extra=1)
     PurchaseItemFormset = inlineformset_factory(Purchase, PurchaseItem,
+                                                form=PurchaseItemForm,
                                                 fk_name="purchase",
                                                 extra=n_of_capsules)
     #### POST method
@@ -128,7 +129,10 @@ def new_purchase(request):
     ## Initialize formset with all capsules
     initial = []
     for capsule in all_capsule_list:
-        initial.append({'capsule': capsule.id, 'price': capsule.price})
+        initial.append({'capsule': capsule.id,
+                        'price': capsule.price,
+                        'default_price': capsule.price,
+                        })
     formset2 = PurchaseItemFormset(initial=initial, prefix='purchaseitem')
     ## context
     context = {

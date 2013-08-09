@@ -51,6 +51,7 @@ window.__admin_media_prefix__ = "/static/admin/";
 	{# http://djangosnippets.org/snippets/1442/ #}
 	{{ formset2.management_form }}
 	<table id="formset2" class="form">
+	<caption>Check delete to disable items for this purchase</caption>
 	{% for form in formset2.forms %}
 		{% if forloop.first %}
 		<thead><tr>
