@@ -85,7 +85,7 @@ class PurchaseAdmin(MyAdmin):
     inlines = [PurchaseItemInline_0, PurchaseItemInline_1]
 
 
-class PurchaseItemAdmin(MyAdmin):
+class PurchaseItemAdmin(MyNoDeleteAdmin):
     readonly_fields = ('quantity_accepted',
                        'quantity_grouped', 'quantity_queued')
     my_readonly_update = ('purchase', 'capsule')
