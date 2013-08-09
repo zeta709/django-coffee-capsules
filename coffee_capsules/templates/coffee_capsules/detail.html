@@ -79,32 +79,56 @@ function toggle(i) {
 			{% endif %}
 		</caption>
 		<colgroup>
-			<col class="name" />{% if capsule_list %}{% for capsule in capsule_list %}
+			<col class="name" />
+			{# capsule columns #}
+			{% if capsule_list %}{% for capsule in capsule_list %}
 			{% if agq %}<col class="quantity accepted" />
 			<col class="quantity grouped" />{% endif  %}
 			<col class="quantity queued" />{% endfor %}{% endif %}
+			{# sum columns #}
 			<col class="sum accepted" />
 			{% if agq %}<col class="sum grouped" />
 			<col class="sum queued" />{% endif %}
+			{# price columns #}
 			<col class="price accepted" />
 			{% if agq %}<col class="price grouped" />
 			<col class="price queued" />{% endif %}
 		</colgroup>
 		{# BEGIN thead #}{% if capsule_list %}
 		<thead>
+		{# thead row1 #}
+		{# thead row1 #}
+		{# thead row1 #}
+		{# thead row1 #}
+		{# thead row1 #}
 		<tr>
-			<th{% if agq %} class="name" rowspan="2"{% endif %}>User</th>{% for capsule in capsule_list %}
-			<th{% if agq %} class="mycolgroup" colspan="1"{% endif %}>{{ capsule.1 }}</th>{% endfor %}
+			<th{% if agq %} class="name" rowspan="2"{% endif %}>User</th>
+			{# capsule columns #}
+			{% for capsule in capsule_list %}
+			<th{% if agq %} class="mycolgroup" colspan="1"{% endif %}>{{ capsule.1 }}</th>
+			{% endfor %}
+			{# sum columns #}
 			<th{% if agq %} class="mycolgroup" colspan="1"{% endif %}>Sum</th>
+			{# price columns #}
 			<th{% if agq %} class="mycolgroup" colspan="1"{% endif %}>Price</th>
 		</tr>{% endif %}{% if agq %}
-		<tr>{% for capsule in capsule_list %}
+		{# thead row2 #}
+		{# thead row2 #}
+		{# thead row2 #}
+		{# thead row2 #}
+		{# thead row2 #}
+		<tr>
+			{# capsule columns #}
+			{% for capsule in capsule_list %}
 			<th class="quantity accepted">A</th>
 			<th class="quantity grouped">G</th>
-			<th class="quantity queued">Q</th>{% endfor %}
+			<th class="quantity queued">Q</th>
+			{% endfor %}
+			{# sum columns #}
 			<th class="sum accepted">A</th>
 			<th class="sum grouped">G</th>
 			<th class="sum queued">Q</th>
+			{# price columns #}
 			<th class="price accepted">A</th>
 			<th class="price grouped">G</th>
 			<th class="price queued">Q</th>
