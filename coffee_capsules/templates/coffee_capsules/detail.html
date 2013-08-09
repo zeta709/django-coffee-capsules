@@ -67,6 +67,7 @@ function toggle(i) {
 		</tbody>
 	</table>
 	<br /><br />{% if request_list %}
+	<div class="scroll_x" id="summary_each_container">
 	<table class="summary hide_queued hide_grouped" id="summary_each">
 		<caption>
 			Summary for each user
@@ -124,6 +125,7 @@ function toggle(i) {
 		</tr>{% endfor %}
 		</tbody>{% endif %}{# END tbody #}
 	</table>{% endif %}
+	</div>
 	<div style="text-align: center">
 		<br /><a href="{% url 'coffee_capsules:request' purchase.pk %}">Order</a>
 	</div>

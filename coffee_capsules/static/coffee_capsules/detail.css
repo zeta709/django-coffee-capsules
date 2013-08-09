@@ -2,12 +2,30 @@ table td:first-child {
 	font-weight: bold;
 }
 
+div.scroll_x {
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	overflow-x: auto;
+	overflow-y: visible;
+}
+
+table.summary {
+	/*width: 100%;*/
+}
+
 table.summary td.accepted {
 	font-weight: bold;
 	color: green;
 }
 
 /* #summary_each */
+
+div#summary_each_container {
+}
+
+table#summary_each {
+}
 
 div#summary_each_toolbox {
 	text-align: center;
