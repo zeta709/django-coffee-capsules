@@ -134,13 +134,6 @@ function toggle(i) {
 			{% endfor %}
 		</tr>
 		</thead>{% endif %}{# END thead #}
-		{# BEGIN tfoot #}{% if total_row %}
-		<tfoot>
-		<tr>{% for i in total_row %}
-			{% if forloop.first %}<td class="name">{{ i }}</td>
-			{% else %}<td{% if agq %} class="{% cycle "accepted" "grouped" "queued" %}"{% endif %}>{{ i|intcomma }}</td>{% endif %}{% endfor %}
-		</tr>
-		</tfoot>{% endif %}{# END tfoot #}
 		{# BEGIN body #}{% if request_list %}
 		<tbody>	{% for request in request_list %}
 		<tr>{% for i in request %}
@@ -148,6 +141,13 @@ function toggle(i) {
 			{% else %}<td{% if agq %} class="{% cycle "accepted" "grouped" "queued" %}"{% endif %}>{{ i|intcomma }}</td>{% endif %}{% endfor %}
 		</tr>{% endfor %}
 		</tbody>{% endif %}{# END tbody #}
+		{# BEGIN tfoot #}{% if total_row %}
+		<tfoot>
+		<tr>{% for i in total_row %}
+			{% if forloop.first %}<td class="name">{{ i }}</td>
+			{% else %}<td{% if agq %} class="{% cycle "accepted" "grouped" "queued" %}"{% endif %}>{{ i|intcomma }}</td>{% endif %}{% endfor %}
+		</tr>
+		</tfoot>{% endif %}{# END tfoot #}
 	</table>{% endif %}
 	</div>
 	<div style="text-align: center">
