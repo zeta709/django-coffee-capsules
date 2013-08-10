@@ -60,11 +60,21 @@ function toggle(i) {
 			<td>{{ purchaseitem.quantity_accepted|intcomma }}</td>
 			<td>{{ purchaseitem.quantity_grouped|intcomma }}</td>
 			<td>{{ purchaseitem.quantity_queued|intcomma }}</td>
-		</tr>{% endfor %}{% else %}
+		</tr>{% endfor %}
+		{% else %}
 		<tr>
 			<td colspan="5">(Empty)</td>
 		</tr>{% endif %}
 		</tbody>
+		<tfoot>
+		{% if purchaseitem_aggregate %}<tr>
+			<td>Total</td>
+			<td>-</td>
+			<td>{{ purchaseitem_aggregate.total_accepted }}</td>
+			<td>{{ purchaseitem_aggregate.total_grouped }}</td>
+			<td>{{ purchaseitem_aggregate.total_queued }}</td>
+		</tr>{% endif %}
+		</tfoot>
 	</table>
 	<br /><br />{% if request_list %}
 	<div class="scroll_x" id="summary_each_container">

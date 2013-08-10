@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.views import generic
 
-from django.db import connection, transaction
+from django.db import connection, transaction, models
 
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -191,6 +191,19 @@ def detail(request, myid):
     template_name = 'coffee_capsules/detail.html'
     purchase = get_object_or_404(Purchase, pk=myid)
     purchaseitem_list = purchase.purchaseitem_set.order_by('capsule__pk')
+    purchaseitem_aggregate = {}
+    purchaseitem_aggregate.update(
+        purchaseitem_list
+        .aggregate(total_accepted=models.Sum('quantity_accepted'))
+    )
+    purchaseitem_aggregate.update(
+        purchaseitem_list
+       .aggregate(total_grouped=models.Sum('quantity_grouped'))
+    )
+    purchaseitem_aggregate.update(
+        purchaseitem_list
+        .aggregate(total_queued=models.Sum('quantity_queued'))
+    )
     #### raw db connection
     cursor = connection.cursor()
     #### get capsule list
@@ -285,6 +298,7 @@ def detail(request, myid):
         'agq': agq,
         'purchase': purchase,
         'purchaseitem_list': purchaseitem_list,
+        'purchaseitem_aggregate': purchaseitem_aggregate,
         'capsule_list': capsule_list,
         'request_list': request_list,
         'total_row': total_row,
