@@ -146,21 +146,24 @@ from django.dispatch import receiver
 def group_request(sender, instance, created, **kwargs):
     if not created:
         return
-    my_g_unit = instance.purchaseitem.purchase.g_unit
+    # Using instance.purchaseitem directly produces a bug
+    # (test_bulk_request1() in tests.py)
+    my_pi = PurchaseItem.objects.get(pk=instance.purchaseitem.pk)
+    my_g_unit = my_pi.purchase.g_unit
     if instance.quantity_accepted > 0 or instance.quantity_grouped > 0:
         print("DEBUG: ERROR")
-    instance.purchaseitem.quantity_queued += instance.quantity_queued
-    instance.purchaseitem.save()
+    my_pi.quantity_queued += instance.quantity_queued
+    my_pi.save()
     if instance.quantity_queued >= my_g_unit:
         mypr = True
         rgqty = (instance.quantity_queued // my_g_unit) * my_g_unit
-        instance.purchaseitem.quantity_queued -= rgqty
-        instance.purchaseitem.quantity_grouped += rgqty
-        instance.purchaseitem.save()
+        my_pi.quantity_queued -= rgqty
+        my_pi.quantity_grouped += rgqty
+        my_pi.save()
         instance.quantity_queued -= rgqty
         instance.quantity_grouped += rgqty
         instance.save()
-        rg = RequestGroup(purchaseitem=instance.purchaseitem,
+        rg = RequestGroup(purchaseitem=my_pi,
                           priority=mypr,
                           quantity_grouped=rgqty, date=instance.date)
         rg.save()
@@ -169,17 +172,17 @@ def group_request(sender, instance, created, **kwargs):
         rgitem.save()
         accept_request(rg)
     # remainders
-    requests = Request.objects.filter(purchaseitem=instance.purchaseitem,
+    requests = Request.objects.filter(purchaseitem=my_pi,
                                       quantity_queued__gt=0).order_by('date')
     qtysum = requests.aggregate(models.Sum('quantity_queued'
                                            ))['quantity_queued__sum']
     if qtysum >= my_g_unit:
         mypr = False
         rgqty = (qtysum // my_g_unit) * my_g_unit
-        instance.purchaseitem.quantity_queued -= rgqty
-        instance.purchaseitem.quantity_grouped += rgqty
-        instance.purchaseitem.save()
-        rg = RequestGroup(purchaseitem=instance.purchaseitem,
+        my_pi.quantity_queued -= rgqty
+        my_pi.quantity_grouped += rgqty
+        my_pi.save()
+        rg = RequestGroup(purchaseitem=my_pi,
                           priority=mypr, quantity_grouped=rgqty,
                           date=instance.date)
         rg.save()
@@ -202,9 +205,13 @@ def group_request(sender, instance, created, **kwargs):
 
 
 def accept_request(instance):
-    my_p_unit = instance.purchaseitem.purchase.p_unit
+    # Using instance.purchaseitem directly produces a bug
+    # (test_bulk_request1() in tests.py)
+    my_pi = PurchaseItem.objects.get(pk=instance.purchaseitem.pk)
+    my_purchase = Purchase.objects.get(pk=my_pi.purchase.pk)
+    my_p_unit = my_purchase.p_unit
     rgs = RequestGroup.objects.filter(
-        purchaseitem__purchase=instance.purchaseitem.purchase,
+        purchaseitem__purchase=my_purchase,
         quantity_grouped__gt=0).order_by('date')
     qtysum = rgs.aggregate(models.Sum('quantity_grouped'
                                       ))['quantity_grouped__sum']
