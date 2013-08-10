@@ -1,0 +1,15 @@
+Requirements
+============
+
+* Django 1.4 or later
+  (with login/logout pages)
+
+
+Installation
+============
+
+1. Add "coffee_capsules" to your INSTALLED_APPS setting
+
+2. Include the coffee_capsules URLconf in your urls.py
+
+3. run `python manage.py syncdb`

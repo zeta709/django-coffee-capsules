@@ -1,0 +1,3 @@
+include README.rst
+recursive-include coffee_capsules/static *
+recursive-include coffee_capsules/templates *
