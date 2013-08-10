@@ -39,11 +39,13 @@ table#summary_each th.mycolgroup {
 	min-width: 2em;
 }
 
+table#summary_each.hide_grouped col.grouped,
 table#summary_each.hide_grouped td.grouped,
 table#summary_each.hide_grouped th.grouped {
 	display: none;
 }
 
+table#summary_each.hide_queued col.queued,
 table#summary_each.hide_queued td.queued,
 table#summary_each.hide_queued th.queued {
 	display: none;
