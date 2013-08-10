@@ -161,7 +161,8 @@ def request(request, myid):
             request_instances = formset.save(commit=False)
             for request_instance in request_instances:
                 request_instance.user = request.user
-                request_instance.save()
+                if request_instance.quantity_queued > 0:
+                    request_instance.save()
             messages.success(request, 'Success')
             return HttpResponseRedirect(reverse('coffee_capsules:detail',
                                                 args=(purchase.id,)))
