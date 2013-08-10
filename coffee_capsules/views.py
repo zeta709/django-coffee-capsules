@@ -55,13 +55,13 @@ def edit_capsule(request, myid=None):
         if form.is_valid():
             form.save()
         else:
-            context = {'form': form,}
+            context = {'form': form, }
             return render(request, template_name, context)
         # fi
         return HttpResponseRedirect(reverse('coffee_capsules:capsule_list'))
     #### NOT POST method
     form = CapsuleForm(instance=capsule)
-    context = {'form': form,}
+    context = {'form': form, }
     return render(request, template_name, context)
 
 
@@ -276,8 +276,8 @@ def detail(request, myid):
             ', SUM(coffee_capsules_purchaseitem.price'
             ' * coffee_capsules_request.quantity_queued) AS GT_q'
         )
-    query_str_1 += ', ' + select_str
     # fi
+    query_str_1 += ', ' + select_str
     query_str_1 += (
         ' FROM "coffee_capsules_request"'
         ' INNER JOIN "coffee_capsules_purchaseitem" ON '

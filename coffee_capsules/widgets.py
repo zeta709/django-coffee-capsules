@@ -6,9 +6,10 @@ from django.utils.html import conditional_escape
 from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
 
-# /usr/lib/python2.7/dist-packages/django/forms/widgets.py
 
-
+# References:
+# "class Select(Widget)" and "class Input(Widget)"
+# in /usr/lib/python2.7/dist-packages/django/forms/widgets.py
 class SelectedReadonly(forms.widgets.Widget):
     allow_multiple_selected = False
 

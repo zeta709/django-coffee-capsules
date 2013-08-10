@@ -149,5 +149,3 @@ class RequestTest(TestCase):
         self.assertEqual(pi_list[4].quantity_accepted, 10)
         self.assertEqual(pi_list[4].quantity_grouped, 10)
         self.assertEqual(pi_list[4].quantity_queued, 0)
-
-

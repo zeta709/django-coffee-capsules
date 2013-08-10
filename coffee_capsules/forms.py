@@ -6,12 +6,12 @@ from coffee_capsules.models import Purchase, PurchaseItem, Request
 from coffee_capsules.widgets import SelectedReadonly
 
 
-# AdminSplitDateTime
-# http://stackoverflow.com/questions/15643019/
 class PurchaseForm(forms.ModelForm):
     class Meta:
         model = Purchase
 
+    # References about AdminSplitDateTime():
+    # http://stackoverflow.com/questions/15643019/
     def __init__(self, *args, **kwargs):
         super(PurchaseForm, self).__init__(*args, **kwargs)
         self.fields['begin_date'].widget = widgets.AdminSplitDateTime()
