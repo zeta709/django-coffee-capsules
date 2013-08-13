@@ -8,19 +8,15 @@ from django.views import generic
 from django.db import connection, transaction, models
 
 from django.contrib import messages
-from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import permission_required
 
-from django.forms import forms
 from django.forms.models import modelform_factory
 from django.forms.models import modelformset_factory
 from django.forms.models import inlineformset_factory
 
 from coffee_capsules.models import Capsule, Purchase, PurchaseItem, Request
 from coffee_capsules.forms import PurchaseForm, PurchaseItemForm, MyRequestForm
-
-from django.utils import timezone
 
 
 class IndexView(generic.ListView):
@@ -100,7 +96,7 @@ def new_purchase(request):
             ## PurchaseItemFormset requires purchase_instance
             ## for correct validation and save
             formset2 = PurchaseItemFormset(request.POST, prefix='purchaseitem',
-                               instance=purchase_instances[0])
+                                           instance=purchase_instances[0])
             if not formset2.is_valid():
                 has_error = True
                 break
@@ -198,7 +194,7 @@ def detail(request, myid):
     )
     purchaseitem_aggregate.update(
         purchaseitem_list
-       .aggregate(total_grouped=models.Sum('quantity_grouped'))
+        .aggregate(total_grouped=models.Sum('quantity_grouped'))
     )
     purchaseitem_aggregate.update(
         purchaseitem_list
@@ -234,23 +230,31 @@ def detail(request, myid):
         ' ORDER BY "coffee_capsules_capsule"."id"'
     )
     if not agq:
-        inner_str = 'SELECT '\
-                + aggregate_str.format('quantity_accepted', 'qty_a_', 'ca')\
-                + from_str
-        query_str_0 = 'SELECT'\
-                + ' group_concat(ca, ", ") AS gc'\
-                + ' FROM (' + inner_str + ')'
+        inner_str = (
+            'SELECT '
+            + aggregate_str.format('quantity_accepted', 'qty_a_', 'ca')
+            + from_str
+        )
+        query_str_0 = (
+            'SELECT'
+            + ' group_concat(ca, ", ") AS gc'
+            + ' FROM (' + inner_str + ')'
+        )
     else:
-        inner_str = 'SELECT '\
-                + aggregate_str.format('quantity_accepted', 'qty_a_', 'ca')\
-                + ', '\
-                + aggregate_str.format('quantity_grouped', 'qty_g_', 'cg')\
-                + ', '\
-                + aggregate_str.format('quantity_queued', 'qty_q_', 'cq')\
-                + from_str
-        query_str_0 = 'SELECT'\
-                + ' group_concat(ca || ", " || cg || ", " || cq, ", ") AS gc'\
-                + ' FROM (' + inner_str + ')'
+        inner_str = (
+            'SELECT '
+            + aggregate_str.format('quantity_accepted', 'qty_a_', 'ca')
+            + ', '
+            + aggregate_str.format('quantity_grouped', 'qty_g_', 'cg')
+            + ', '
+            + aggregate_str.format('quantity_queued', 'qty_q_', 'cq')
+            + from_str
+        )
+        query_str_0 = (
+            'SELECT'
+            + ' group_concat(ca || ", " || cg || ", " || cq, ", ") AS gc'
+            + ' FROM (' + inner_str + ')'
+        )
     # fi
     cursor.execute(query_str_0, [myid])
     select_str = cursor.fetchall()[0][0]

@@ -8,7 +8,6 @@ Replace this with more appropriate tests for your application.
 import datetime
 
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.utils import timezone
 from django.test import TestCase
 
@@ -40,7 +39,7 @@ def create_purchase(name):
     )
     all_capsule_list = Capsule.objects.order_by('pk')
     for capsule in all_capsule_list:
-        pi = PurchaseItem.objects.create(
+        PurchaseItem.objects.create(
             purchase=purchase,
             capsule=capsule,
             price=capsule.price
