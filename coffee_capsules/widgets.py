@@ -50,10 +50,10 @@ class SelectedReadonly(forms.widgets.Widget):
         for option_value, option_label in chain(self.choices, choices):
             if isinstance(option_label, (list, tuple)):
                 for option in option_label:
-                    render_options = self.render_option(selected_choices,
-                                                        *option)
-                    if render_option != '':
-                        output.append(render_option)
+                    rendered_option = self.render_option(selected_choices,
+                                                         *option)
+                    if rendered_option != '':
+                        output.append(rendered_option)
             else:
                 rendered_option = self.render_option(selected_choices,
                                                      option_value,
